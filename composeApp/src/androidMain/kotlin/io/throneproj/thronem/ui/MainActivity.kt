@@ -1,0 +1,87 @@
+@file:OptIn(KoinDelicateAPI::class, KoinExperimentalAPI::class)
+
+package io.throneproj.thronem.ui
+
+import android.content.Intent
+import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.lifecycle.lifecycleScope
+import io.throneproj.thronem.bg.DeepLinkDispatcher
+import io.throneproj.thronem.bg.SagerConnection
+import io.throneproj.thronem.compose.theme.AppTheme
+import io.throneproj.thronem.database.DataStore
+import io.throneproj.thronem.permission.LocalPermissionPlatform
+import io.throneproj.thronem.permission.rememberAndroidPermissionPlatform
+import io.throneproj.thronem.repository.resolveRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.activityRetainedScope
+import org.koin.compose.scope.UnboundKoinScope
+import org.koin.core.annotation.KoinDelicateAPI
+import org.koin.core.annotation.KoinExperimentalAPI
+
+class MainActivity : ComposeActivity(), AndroidScopeComponent {
+
+    override val scope by activityRetainedScope()
+    private val serviceConnection = SagerConnection(listenForDeath = true)
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        serviceConnection.connect(applicationContext)
+        lifecycleScope.launch(Dispatchers.IO) {
+            DataStore.serviceMode.flow()
+                .drop(1)
+                .collect {
+                    if (DataStore.serviceState.started) {
+                        resolveRepository().reloadService()
+                        serviceConnection.reconnect(applicationContext)
+                    }
+                }
+        }
+
+        val isFreshLaunch = savedInstanceState == null
+        if (isFreshLaunch) dispatchDeepLink(intent)
+        val initialProcessText = intent
+            .takeIf { isFreshLaunch && it.action == Intent.ACTION_PROCESS_TEXT }
+            ?.getStringExtra(Intent.EXTRA_PROCESS_TEXT)
+
+        setContent {
+            val permissionPlatform = rememberAndroidPermissionPlatform()
+            UnboundKoinScope(scope) {
+                CompositionLocalProvider(
+                    LocalPermissionPlatform provides permissionPlatform,
+                ) {
+                    AppTheme {
+                        MainScreen(
+                            moveToBackground = { moveTaskToBack(true) },
+                            initialProcessText = initialProcessText,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+
+        setIntent(intent)
+        dispatchDeepLink(intent)
+    }
+
+    private fun dispatchDeepLink(intent: Intent) {
+        if (intent.action != Intent.ACTION_VIEW) return
+        val uri = intent.data ?: return
+        DeepLinkDispatcher.emit(uri.toString())
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        serviceConnection.disconnect(applicationContext)
+    }
+
+}

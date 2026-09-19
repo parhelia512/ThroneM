@@ -3,7 +3,11 @@
 
 -dontobfuscate
 -keepattributes SourceFile,LineNumberTable
--keep class fr.husi.** { *;}
+-keep class io.throneproj.thronem.** { *;}
+
+# libbox (gomobile bind): JNI looks up classes/members by name
+-keep class io.nekohasekai.libbox.** { *;}
+-keep class go.** { *;}
 
 # Clean Kotlin
 -assumenosideeffects class kotlin.jvm.internal.Intrinsics {

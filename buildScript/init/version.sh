@@ -1,30 +1,9 @@
 #!/usr/bin/env bash
 
 GO_VERSION="1.27.0"
-RUST_VERSION="1.98.0"
 JAVA_VERSION="21"
-# https://github.com/JetBrains/JetBrainsRuntime
-# Bundled into the Windows JBR packages. The feature version has to stay
-# equal to JAVA_VERSION: the host jlink links these jmods, and jlink cannot
-# read jmods newer than itself.
-JBR_VERSION="21.0.11"
-JBR_BUILD="1163.116"
 ANDROID_NDK_VERSION="r29"
 # ANDROID_NDK_VERSION as named by sdkmanager under $ANDROID_HOME/ndk/
 ANDROID_NDK_FULL_VERSION="29.0.14206865"
-ZIG_VERSION="0.16.0"
-NFPM_VERSION="2.47.0"
-APPIMAGETOOL_VERSION="1.9.1"
-# https://github.com/AppImage/type2-runtime
-APPIMAGE_RUNTIME_VERSION="20251108"
-PROTOC_VERSION="36.1"
-JNI_HEADERS_VERSION="21"
-JNI_HEADERS_COMMIT="68b16cb0252c32b66b28f7260439970cec24ba04"
-MACOS_SDK_VERSION="26.5"
-MACOS_SDK_COMMIT="896cd40df984b847d486723edce50e247385617e"
 
-# https://github.com/Dreamacro/maxmind-geoip
-GEOIP_VERSION="20260812"
-
-# https://github.com/v2fly/domain-list-community
-GEOSITE_VERSION="20260908094002"
+# Geo asset versions are resolved at build time by buildScript/lib/assets.sh.

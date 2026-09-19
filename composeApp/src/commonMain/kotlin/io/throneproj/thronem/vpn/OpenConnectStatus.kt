@@ -1,0 +1,220 @@
+package io.throneproj.thronem.vpn
+
+import io.nekohasekai.libbox.OpenConnectAuthChallenge
+import io.nekohasekai.libbox.OpenConnectAuthForm
+import io.nekohasekai.libbox.OpenConnectBrowserRequest
+import io.nekohasekai.libbox.OpenConnectEndpointStatus
+import io.nekohasekai.libbox.OpenConnectTunnelInfo
+
+const val OPENCONNECT_FIELD_TEXT = "text"
+const val OPENCONNECT_FIELD_PASSWORD = "password"
+const val OPENCONNECT_FIELD_SELECT = "select"
+
+data class OpenConnectAuthChoice(
+    val value: String,
+    val label: String,
+)
+
+data class OpenConnectAuthField(
+    val submissionKey: String,
+    val name: String,
+    val label: String,
+    val kind: String,
+    val value: String,
+    val options: List<OpenConnectAuthChoice>,
+)
+
+data class OpenConnectAuthFormState(
+    val fields: List<OpenConnectAuthField>,
+)
+
+data class OpenConnectBrowserRequestState(
+    val url: String,
+    val finalUrl: String,
+    val cacheId: String,
+    val cookieNames: List<String>,
+    val earlyCookieNames: List<String>,
+    val headerNames: List<String>,
+    val callbackUrlPrefixes: List<String>,
+) {
+    /**
+     * Mirrors sing-openconnect's `validateBrowserRequest`: a request that the core would
+     * reject is [OpenConnectBrowserCompletionMode.Invalid] here as well, so neither front end
+     * can start an authentication flow the core will refuse.
+     */
+    val completionMode: OpenConnectBrowserCompletionMode
+        get() {
+            if (url.isEmpty()) return OpenConnectBrowserCompletionMode.Invalid
+            val callbackMode = callbackUrlPrefixes.isNotEmpty()
+            val cookieMode =
+                finalUrl.isNotEmpty() || cookieNames.isNotEmpty() || earlyCookieNames.isNotEmpty()
+            val headerMode = headerNames.isNotEmpty()
+            if (listOf(callbackMode, cookieMode, headerMode).count { it } != 1) {
+                return OpenConnectBrowserCompletionMode.Invalid
+            }
+            return when {
+                callbackMode -> when {
+                    callbackUrlPrefixes.hasEmptyOrDuplicate() -> OpenConnectBrowserCompletionMode.Invalid
+                    else -> OpenConnectBrowserCompletionMode.Callback
+                }
+
+                cookieMode -> when {
+                    finalUrl.isEmpty() || cookieNames.isEmpty() -> OpenConnectBrowserCompletionMode.Invalid
+                    cookieNames.hasEmptyOrDuplicate() -> OpenConnectBrowserCompletionMode.Invalid
+                    earlyCookieNames.hasEmptyOrDuplicate() -> OpenConnectBrowserCompletionMode.Invalid
+                    earlyCookieNames.any { it in cookieNames } -> OpenConnectBrowserCompletionMode.Invalid
+                    else -> OpenConnectBrowserCompletionMode.Cookie
+                }
+
+                else -> when {
+                    headerNames.hasEmptyOrDuplicate(ignoreCase = true) -> OpenConnectBrowserCompletionMode.Invalid
+                    else -> OpenConnectBrowserCompletionMode.Header
+                }
+            }
+        }
+}
+
+enum class OpenConnectBrowserCompletionMode {
+    Callback,
+    Cookie,
+    Header,
+    Invalid,
+}
+
+private fun List<String>.hasEmptyOrDuplicate(ignoreCase: Boolean = false): Boolean {
+    val seen = mutableSetOf<String>()
+    for (value in this) {
+        if (value.isEmpty()) return true
+        if (!seen.add(if (ignoreCase) value.lowercase() else value)) return true
+    }
+    return false
+}
+
+private fun io.nekohasekai.libbox.OpenConnectAuthFormFieldIterator.toList(): List<io.nekohasekai.libbox.OpenConnectAuthFormField> =
+    ArrayList<io.nekohasekai.libbox.OpenConnectAuthFormField>().apply {
+        while (hasNext()) add(next())
+    }
+
+private fun io.nekohasekai.libbox.OpenConnectAuthFormChoiceIterator.toList(): List<io.nekohasekai.libbox.OpenConnectAuthFormChoice> =
+    ArrayList<io.nekohasekai.libbox.OpenConnectAuthFormChoice>().apply {
+        while (hasNext()) add(next())
+    }
+
+private fun io.nekohasekai.libbox.StringIterator.toList(): List<String> =
+    ArrayList<String>().apply {
+        while (hasNext()) add(next())
+    }
+
+data class OpenConnectBrowserResultState(
+    val finalUrl: String,
+    val cookies: Map<String, String>,
+    val headers: Map<String, String>,
+)
+
+fun OpenConnectBrowserRequestState.buildResult(
+    finalUrl: String,
+    cookies: Map<String, String>,
+    headers: Map<String, String>,
+): OpenConnectBrowserResultState {
+    if (completionMode == OpenConnectBrowserCompletionMode.Cookie) {
+        for (name in earlyCookieNames) {
+            val value = cookies[name].orEmpty()
+            if (value.isNotEmpty()) {
+                return OpenConnectBrowserResultState("", mapOf(name to value), emptyMap())
+            }
+        }
+    }
+    return when (completionMode) {
+        OpenConnectBrowserCompletionMode.Callback -> OpenConnectBrowserResultState(finalUrl, emptyMap(), emptyMap())
+        OpenConnectBrowserCompletionMode.Cookie -> OpenConnectBrowserResultState(
+            finalUrl,
+            cookies.filterKeys { it in cookieNames },
+            emptyMap(),
+        )
+
+        OpenConnectBrowserCompletionMode.Header -> OpenConnectBrowserResultState("", emptyMap(), headers)
+        OpenConnectBrowserCompletionMode.Invalid -> OpenConnectBrowserResultState(finalUrl, cookies, headers)
+    }
+}
+
+data class OpenConnectAuthChallengeState(
+    val id: String,
+    val banner: String,
+    val message: String,
+    val error: String,
+    val form: OpenConnectAuthFormState?,
+    val browser: OpenConnectBrowserRequestState?,
+)
+
+data class OpenConnectTunnelInfoState(
+    val server: String,
+    val flavor: String,
+    val transport: String,
+    val ipv4: List<String>,
+    val ipv6: List<String>,
+    val dns: List<String>,
+    val mtu: Int,
+    val connectedSince: Long,
+)
+
+data class OpenConnectEndpointState(
+    val tag: String,
+    val state: String,
+    val error: String,
+    val authChallenge: OpenConnectAuthChallengeState?,
+    val tunnelInfo: OpenConnectTunnelInfoState?,
+)
+
+fun OpenConnectEndpointStatus.toState() = OpenConnectEndpointState(
+    tag = endpointTag,
+    state = state,
+    error = error,
+    authChallenge = authChallenge?.toState(),
+    tunnelInfo = tunnelInfo?.toState(),
+)
+
+fun OpenConnectAuthChallenge.toState() = OpenConnectAuthChallengeState(
+    id = id,
+    banner = banner,
+    message = message,
+    error = error,
+    form = form?.toState(),
+    browser = browser?.toState(),
+)
+
+fun OpenConnectAuthForm.toState(): OpenConnectAuthFormState {
+    val fields = fields().toList().map { field ->
+        OpenConnectAuthField(
+            submissionKey = field.submissionKey,
+            name = field.name,
+            label = field.label,
+            kind = field.kind,
+            value = field.value,
+            options = field.options().toList().map { option ->
+                OpenConnectAuthChoice(value = option.value, label = option.label)
+            },
+        )
+    }
+    return OpenConnectAuthFormState(fields = fields)
+}
+
+fun OpenConnectBrowserRequest.toState() = OpenConnectBrowserRequestState(
+    url = url,
+    finalUrl = finalURL,
+    cacheId = cacheID,
+    cookieNames = cookieNames().toList(),
+    earlyCookieNames = earlyCookieNames().toList(),
+    headerNames = headerNames().toList(),
+    callbackUrlPrefixes = callbackURLPrefixes().toList(),
+)
+
+fun OpenConnectTunnelInfo.toState() = OpenConnectTunnelInfoState(
+    server = server,
+    flavor = flavor,
+    transport = transport,
+    ipv4 = iPv4().toList(),
+    ipv6 = iPv6().toList(),
+    dns = dns().toList(),
+    mtu = mtu,
+    connectedSince = connectedSince,
+)

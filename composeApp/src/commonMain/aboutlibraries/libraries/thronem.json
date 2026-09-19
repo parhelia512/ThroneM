@@ -1,0 +1,13 @@
+{
+  "uniqueId": "io.throneproj.thronem:thronem",
+  "name": "thronem",
+  "website": "https://github.com/throneproj/thronem",
+  "developers": [
+    {
+      "name": "ThroneM authors"
+    }
+  ],
+  "licenses": [
+    "GPL-3.0-or-later"
+  ]
+}

@@ -1,9 +1,0 @@
-package fr.husi.fmt
-
-internal expect suspend fun SingBoxOptions.Inbound_TunOptions.applyPlatformConfig()
-
-internal expect val localDNSSupportRaw: Boolean
-
-internal expect val anchorDeviceName: String
-
-internal expect val protectPath: String

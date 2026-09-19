@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Husi</string>
+    <string name="app_name">ThroneM</string>
     <string name="project">Project</string>
     <string name="github">Source code</string>
     <string name="telegram">Telegram update channel</string>
@@ -134,8 +134,6 @@
     <string name="enc_method">Encrypt Method</string>
     <string name="protocol">Protocol</string>
     <string name="protocol_param">Protocol Param</string>
-    <string name="obfs">Obfs</string>
-    <string name="obfs_param">Obfs Param</string>
     <string name="uuid">User ID</string>
     <string name="alter_id">Alter ID</string>
     <string name="security">Transport layer encryption</string>
@@ -222,8 +220,9 @@
     <string name="vpn_permission_denied">Permission denied to create a VPN service</string>
     <string name="reboot_required">Failed to start VPN service. You might need to reboot your device.</string>
     <!-- alert category -->
-    <string name="profile_empty">Please select a profile</string>
+    <string name="profile_empty">Please select a proxy set</string>
     <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
     <string name="clipboard_empty">Clipboard is empty</string>
     <!-- menu category -->
     <string name="settings">Settings</string>
@@ -240,7 +239,6 @@
     <string name="action_vmess" translatable="false">VMess</string>
     <string name="action_vless" translatable="false">VLESS</string>
     <string name="action_trojan" translatable="false">Trojan</string>
-    <string name="action_mieru" translatable="false">Mieru</string>
     <string name="action_naive" translatable="false">Naïve</string>
     <string name="action_hysteria" translatable="false">Hysteria</string>
     <string name="action_hysteria2" translatable="false">Hysteria 2</string>
@@ -248,6 +246,48 @@
     <string name="action_wireguard" translatable="false">WireGuard</string>
     <string name="action_openconnect" translatable="false">OpenConnect</string>
     <string name="action_openvpn" translatable="false">OpenVPN</string>
+    <string name="action_masque" translatable="false">MASQUE</string>
+    <string name="masque_private_key">Private Key (base64 SEC1 DER)</string>
+    <string name="masque_server_public_key">Server Public Key (base64 PKIX DER)</string>
+    <string name="masque_vhttp">HTTP Version (auto / h3 / h2)</string>
+    <string name="masque_idle_timeout">Idle Timeout (e.g. 5m, empty = default)</string>
+    <string name="masque_keep_alive">QUIC Keep-alive (e.g. 30s, empty = default)</string>
+    <string name="warp_wizard_title">Get WARP</string>
+    <string name="warp_wizard_desc">Registers a free tunnel on Cloudflare. The private key is generated on this device and never leaves it. The new profile is added to the current group.</string>
+    <string name="warp_transport">Transport</string>
+    <string name="warp_masque_desc">MASQUE tunnels IP over HTTP/3 (QUIC) to Cloudflare — standard HTTPS transport, and the exit IP is often in another country.</string>
+    <string name="warp_masque_network">HTTP version</string>
+    <string name="warp_masque_endpoint_ip">Endpoint IP</string>
+    <string name="warp_masque_endpoint_ip_desc">Leave IP empty to use the server from registration. HTTP/3 only works on a few Cloudflare addresses, HTTP/2 works across the whole block.</string>
+    <string name="warp_masque_port">Port</string>
+    <string name="warp_masque_sni">SNI</string>
+    <string name="warp_masque_sni_desc">Leave empty for the default SNI</string>
+    <string name="warp_masque_idle">Idle timeout (min)</string>
+    <string name="warp_masque_keepalive_sec">Keep-alive (sec)</string>
+    <string name="warp_masque_tuning_desc">Idle timeout suspends the tunnel after inactivity to save battery (default 5 min). Keep-alive pings the QUIC link (default 30 sec, HTTP/3 only). Leave empty for defaults.</string>
+    <string name="warp_license">WARP+ license key</string>
+    <string name="warp_license_desc">WARP+ adds Argo Smart Routing (lower latency). Leave empty for free WARP.</string>
+    <string name="warp_endpoint">Endpoint</string>
+    <string name="warp_endpoint_desc">host:port of the Cloudflare peer. With obfuscation a random working IP:port is filled in automatically.</string>
+    <string name="warp_keepalive">Persistent keepalive (s)</string>
+    <string name="warp_keepalive_desc">Keeps the tunnel alive while idle (default 25). 0 = off.</string>
+    <string name="warp_obfuscate">Add Amnezia obfuscation</string>
+    <string name="warp_obfuscate_desc">Adds padding traffic so the WireGuard handshake carries no fixed size signature. Enable if the plain tunnel does not connect.</string>
+    <string name="warp_masquerade_hint">Junk traffic masquerades as a real protocol. Pick protocol/domain in Advanced.</string>
+    <string name="warp_advanced">Advanced</string>
+    <string name="warp_browser">Browser (ib)</string>
+    <string name="warp_masquerade_protocol">Masquerade protocol (quic / dns / stun / sip)</string>
+    <string name="warp_masquerade_domain">Masquerade domain</string>
+    <string name="warp_junk_packets">Junk packets Jc / Jmin / Jmax</string>
+    <string name="warp_include_reserved">Bind to this device (reserved)</string>
+    <string name="warp_include_reserved_desc">Sends the Cloudflare client_id. Off for obfuscation (the device binding tends to get blocked).</string>
+    <string name="warp_force_new">Re-register (force new account)</string>
+    <string name="warp_force_new_desc">Ignore the cached account and register a fresh one.</string>
+    <string name="warp_register">Register</string>
+    <string name="warp_registering">Registering…</string>
+    <string name="warp_failed">WARP registration failed</string>
+    <string name="warp_registered">WARP profile added to the current group</string>
+    <string name="warp_registered_plus">WARP+ profile added to the current group</string>
     <string name="openconnect_flavor">Flavor</string>
     <string name="openconnect_auth_group">Authentication Group</string>
     <string name="openconnect_reported_os">Reported OS</string>
@@ -275,9 +315,7 @@
     <string name="action_direct" translatable="false">Direct</string>
     <string name="action_anytls" translatable="false">AnyTLS</string>
     <string name="action_shadowtls" translatable="false">ShadowTLS</string>
-    <string name="action_shadowquic" translatable="false">Shadow QUIC</string>
     <string name="action_sunnyquic" translatable="false">Sunny QUIC</string>
-    <string name="action_trusttunnel" translatable="false">TrustTunnel</string>
     <string name="action_urltest" translatable="false">URLTest</string>
     <string name="action_selector" translatable="false">Selector</string>
     <string name="action_balancer" translatable="false">Balancer</string>
@@ -344,9 +382,6 @@
     <string name="plugin">Plugin</string>
     <string name="plugin_configure">Configure…</string>
     <string name="plugin_disabled">Disabled</string>
-    <string name="plugin_unknown">Unknown plugin %1$s</string>
-    <string name="plugin_untrusted">Warning: This plugin does not seem to come from a known trusted source.</string>
-    <string name="plugin_auto_connect_unlock_only">This plugin might not work with Auto Connect</string>
     <!-- SIP003 graphical editor -->
     <string name="sip003_editor">SIP003 plugin editor</string>
     <string name="sip003_pick_plugin_first">Choose a plugin first</string>
@@ -415,8 +450,6 @@
     <string name="update_when_connected_only_sum">Prevent IP address leakage</string>
     <string name="user_agent">UserAgent</string>
     <string name="confirm">Confirm</string>
-    <string name="missing_plugin">Missing Plugin</string>
-    <string name="profile_requiring_plugin">Profile %1$s requires the %2$s plugin to be installed, but it was not found.</string>
     <string name="action_learn_more">LEARN MORE</string>
     <string name="action_download">DOWNLOAD</string>
     <string name="install_from_play_store">Install from Play Store</string>
@@ -468,8 +501,6 @@
     <string name="group_order_origin">Origin</string>
     <string name="group_order_by_name">By Name</string>
     <string name="group_order_by_delay">By Delay</string>
-    <string name="shadowsocks_plugin_simple_obfs">Simple Obfs (Shadowsocks Android Plugin)</string>
-    <string name="shadowsocks_plugin_v2ray">V2Ray (Shadowsocks Android Plugin)</string>
     <string name="traffic_uplink" translatable="false">%1$s | %2$s/s ↑</string>
     <string name="traffic_downlink" translatable="false">%1$s | %2$s/s ↓</string>
     <string name="traffic_uplink_total" translatable="false">%1$s ↑</string>
@@ -516,6 +547,7 @@
     <string name="naive_insecure_concurrency_summary">Use N concurrent tunnel connections to be more robust under bad network conditions. More connections make the tunneling easier to detect and less secure. This project strives for the strongest security against traffic analysis. Using it in an insecure way defeats its purpose.\n\nIf you must use this, try N=2 first to see if it solves your issues. Strongly recommend against using more than 4 connections here.</string>
     <string name="naive_tunnel_timeout">Tunnel Timeout (s)</string>
     <string name="naive_idle_timeout">Idle Timeout (s)</string>
+    <string name="disable_post_quantum">Disable post-quantum key agreement</string>
     <string name="stun_test">NAT behaviour discovery</string>
     <string name="stun_test_summary">Determine the client\'s NAT mapping behaviour and the NAT filtering behaviour defined in RFC 3478 using STUN.</string>
     <string name="start">Start</string>
@@ -567,7 +599,6 @@
     <string name="tuic_disable_sni">Disable SNI</string>
     <string name="tuic_reduce_rtt">Enable 0-RTT QUIC handshake</string>
     <string name="connection_test_delete_unavailable">Clear unavailable</string>
-    <string name="neko_plugin_internal_error">%1$s internal error</string>
     <string name="move">Move</string>
     <string name="create_shortcut">Create Shortcut</string>
     <string name="hop_interval">Port Hopping Interval(second)</string>
@@ -622,10 +653,9 @@
     <string name="action_flash_off">Turn of flash</string>
     <string name="location_permission_title">Location permission</string>
     <string name="no_thanks">No, thanks</string>
-    <string name="location_permission_description">Your route rule contains Wi-Fi SSID or Wi-Fi BSSID routing rules. To make them work, husi uses the location permission in the background to get information about the connected Wi-Fi network. The information will be used for routing purposes only.</string>
+    <string name="location_permission_description">Your route rule contains Wi-Fi SSID or Wi-Fi BSSID routing rules. To make them work, thronem uses the location permission in the background to get information about the connected Wi-Fi network. The information will be used for routing purposes only.</string>
     <string name="location_permission_background_description">On Android 10 and up, background location permission is required. Select Allow all the time to grant the permission.</string>
     <string name="insecure_warn">Security Advisory</string>
-    <string name="hysteria2_provider">Hysteria2 provider</string>
     <string name="authenticated_length">Authenticated length</string>
     <string name="experimental_authenticated_length">Make the length of each payload segment no longer malleable. This experiment requires the server and client use the same version of v2ray-core. More breaking updates on this experiment is expected.</string>
     <string name="keep_default">Keep default</string>
@@ -671,9 +701,6 @@
     <string name="custom_rule_provider">Custom Rule Provider</string>
     <string name="client_type">Client Type</string>
     <string name="done">Done</string>
-    <string name="desktop_plugins">Desktop Plugins</string>
-    <string name="custom_plugin_prefix">Custom plugin prefix</string>
-    <string name="custom_plugin_prefix_summary">Please make sure you totally trust the plugin provider.</string>
     <string name="traffic_status">Stats</string>
     <string name="traffic_connections">Connections</string>
     <string name="status_goroutines" translatable="false">Goroutines</string>
@@ -686,7 +713,6 @@
     <string name="dashboard_hidden_widgets">Hidden cards</string>
     <string name="dashboard_hide_widget">Hide card</string>
     <string name="dashboard_show_widget">Show card</string>
-    <string name="disable_post_quantum">Disable post-quantum key agreement</string>
     <string name="mux_strategy">Mux Strategy</string>
     <string name="mux_number">Mux Number</string>
     <string name="mux_max_connections">Max connections</string>
@@ -725,6 +751,9 @@
     <string name="ech" translatable="false">ECH</string>
     <string name="v2ray_transport">V2Ray Transport</string>
     <string name="http_headers" translatable="false">HTTP Headers</string>
+    <string name="xhttp_host">XHTTP Host</string>
+    <string name="xhttp_path">XHTTP Path</string>
+    <string name="xhttp_mode">XHTTP mode</string>
     <string name="import_http_url">You are importing a HTTP URL. Which action do you want?</string>
     <string name="idle_session_check_interval">IDLE Session Check Interval</string>
     <string name="idle_session_timeout">IDLE Session Timeout</string>
@@ -755,6 +784,9 @@
     <string name="minimum_mtu">Minimum MTU</string>
     <string name="management">Management</string>
     <string name="proxy_set">Proxy Set</string>
+    <string name="add_proxy_set">Add Proxy Set</string>
+    <string name="proxy_set_status_empty">No proxy sets</string>
+    <string name="proxy_set_delete_confirm_prompt">Are you sure you want to remove this proxy set?</string>
     <string name="interrupt_exist_connections">Interrupt Exist Connections</string>
     <string name="urltest_interval">URLTest Interval</string>
     <string name="rotate_interval">Rotate Interval</string>
@@ -804,7 +836,6 @@
     <string name="connection_status_active">Active</string>
     <string name="connection_status_closed">Closed</string>
     <string name="can_not_be_empty">Cann\'t be empty</string>
-    <string name="juicity_provider">Juicity Provider</string>
     <plurals name="delete_confirm_detail">
         <item quantity="one">Are you sure you want to remove this profile?\n\n%1$s</item>
         <item quantity="other">Are you sure you want to remove these profiles?\n\n%1$s</item>
@@ -831,7 +862,6 @@
     <string name="fake_ip_range_4">Fake IP Range (IPv4)</string>
     <string name="fake_ip_range_6">Fake IP Range (IPv6)</string>
     <string name="long_click_to_see_name">Long click to see the name</string>
-    <string name="provider_naive">NaïveProxy Provider</string>
     <string name="max_log_line">Max Log Line</string>
     <string name="scroll_to_bottom">Scroll to bottom</string>
     <string name="ech_query_server_name">Server Name to Query</string>
@@ -848,22 +878,6 @@
     <string name="cancel">Cancel</string>
     <string name="search_go">Search</string>
 
-    <string name="remote_control">Remote control</string>
-    <string name="remote_server_add">Add server</string>
-    <string name="remote_server_edit">Edit server</string>
-    <string name="remote_server_url_hint">host:port or http(s)://host:port</string>
-    <string name="remote_server_url_invalid">Enter host:port or http(s)://host:port</string>
-    <string name="remote_server_secret">Secret</string>
-    <string name="remote_target">Target</string>
-    <string name="remote_target_local">Local device</string>
-    <string name="remote_target_manage">Manage servers…</string>
-    <string name="remote_empty">No remote servers yet</string>
-    <string name="remote_reconnecting">Reconnecting…</string>
-    <string name="remote_disconnect">Disconnect</string>
-    <string name="remote_test_success">Connected to %1$s</string>
-    <string name="remote_uptime">Uptime %1$s</string>
-    <string name="remote_delete_confirm">Remove this remote server?</string>
-
     <!-- security warnings -->
     <string name="warn_hysteria_legacy">The configuration (Hysteria1) is deprecated.\n\nLearn more: https://v2.hysteria.network/docs/misc/2-vs-1/</string>
     <string name="warn_insecure">The configuration (insecure) can be detected and identified, the transmission is fully visible to the censor and is not resistant to man-in-the-middle tampering with the content of the communication.</string>
@@ -876,9 +890,6 @@
     <string name="exit">Exit</string>
     <string name="tun_strict_route">Tun strict route</string>
     <string name="tun_auto_redirect">Tun auto redirect</string>
-    <string name="no_plugin_found">No plugin found!</string>
-    <string name="plugin_not_installed">Not installed</string>
-    <string name="plugin_not_installed_summary">Tap to open the download page</string>
     <string name="traffic_pattern">Traffic Pattern</string>
     <string name="route_invert">Invert Match</string>
     <string name="latency">Latency</string>

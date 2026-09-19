@@ -65,14 +65,8 @@
         android:name="android.hardware.location.gps"
         android:required="false" />
 
-    <queries>
-        <intent>
-            <action android:name="io.nekohasekai.sagernet.plugin.ACTION_NATIVE_PLUGIN" />
-        </intent>
-    </queries>
-
     <application
-        android:name="fr.husi.Application"
+        android:name="io.throneproj.thronem.Application"
         android:allowBackup="true"
         android:banner="@drawable/ic_banner"
         android:dataExtractionRules="@xml/backup_rules"
@@ -115,7 +109,7 @@
 
                 <data
                     android:host="subscription"
-                    android:scheme="husi" />
+                    android:scheme="thronem" />
 
             </intent-filter>
 
@@ -136,7 +130,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="husi" />
+                <data android:scheme="thronem" />
                 <data android:scheme="ss" />
                 <data android:scheme="socks" />
                 <data android:scheme="socks4" />
@@ -166,7 +160,7 @@
         <!--
             The launcher entry lives on an alias so that it can be disabled to hide the app from
             the launcher without breaking deep links, shortcuts or the quick settings tile.
-            See fr.husi.LauncherIcon.
+            See io.throneproj.thronem.LauncherIcon.
         -->
         <activity-alias
             android:name=".ui.LauncherActivityAlias"
@@ -206,7 +200,7 @@
         </activity-alias>
 
         <activity
-            android:name="fr.husi.ui.VpnRequestActivity"
+            android:name="io.throneproj.thronem.ui.VpnRequestActivity"
             android:excludeFromRecents="true"
             android:taskAffinity=""
             android:theme="@style/Theme.Dialog" />
@@ -215,7 +209,6 @@
             android:excludeFromRecents="true"
             android:exported="false"
             android:launchMode="singleTask"
-            android:process=":bg"
             android:taskAffinity=""
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
@@ -223,7 +216,6 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:label="@string/quick_toggle"
-            android:process=":bg"
             android:taskAffinity=""
             android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
@@ -244,8 +236,7 @@
         <service
             android:name=".bg.ProxyService"
             android:exported="false"
-            android:foregroundServiceType="specialUse"
-            android:process=":bg">
+            android:foregroundServiceType="specialUse">
             <property
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="proxy" />
@@ -257,7 +248,6 @@
             android:foregroundServiceType="systemExempted"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_VPN_SERVICE"
-            android:process=":bg"
             tools:ignore="ForegroundServicePermission,VpnServicePolicy">
 
             <intent-filter>
@@ -268,10 +258,9 @@
         <service
             android:name=".bg.TileService"
             android:exported="true"
-            android:icon="@drawable/ic_service_active"
+            android:icon="@drawable/ic_throne_tile"
             android:label="@string/tile_title"
-            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
-            android:process=":bg">
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
@@ -305,7 +294,7 @@
             android:exported="false"
             tools:node="merge">
             <meta-data
-                android:name="fr.husi.Application"
+                android:name="io.throneproj.thronem.Application"
                 android:value="androidx.startup" />
             <meta-data
                 android:name="androidx.work.WorkManagerInitializer"
@@ -316,8 +305,7 @@
         <receiver
             android:name=".BootReceiver"
             android:enabled="false"
-            android:exported="true"
-            android:process=":bg">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
@@ -325,7 +313,7 @@
             </intent-filter>
         </receiver>
 
-        <!-- Restores the launcher icon when *#*#231230#*#* is dialled, see fr.husi.LauncherIcon. -->
+        <!-- Restores the launcher icon when *#*#231230#*#* is dialled, see io.throneproj.thronem.LauncherIcon. -->
         <receiver
             android:name=".SecretCodeReceiver"
             android:exported="true">
@@ -340,12 +328,11 @@
         </receiver>
 
         <receiver
-            android:name="fr.husi.tasker.TaskerReceiver"
+            android:name="io.throneproj.thronem.tasker.TaskerReceiver"
             android:directBootAware="true"
             android:enabled="false"
             android:exported="true"
             android:permission="com.twofortyfouram.locale.permission.FIRE_SETTING"
-            android:process=":bg"
             tools:ignore="ExportedReceiver">
             <intent-filter>
                 <action android:name="com.twofortyfouram.locale.intent.action.FIRE_SETTING" />
@@ -353,17 +340,13 @@
         </receiver>
 
         <activity
-            android:name="fr.husi.tasker.TaskerActivity"
+            android:name="io.throneproj.thronem.tasker.TaskerActivity"
             android:enabled="false"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.twofortyfouram.locale.intent.action.EDIT_SETTING" />
             </intent-filter>
         </activity>
-
-        <service
-            android:name="androidx.room.MultiInstanceInvalidationService"
-            android:process=":bg" />
 
     </application>
 

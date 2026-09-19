@@ -14,8 +14,6 @@
     <string name="security">Шыфраванне транспартнага ўзроўню</string>
     <string name="alter_id">Змяніць ID</string>
     <string name="uuid">Ідентифікатор карыстальніка</string>
-    <string name="obfs_param">Obfs Парам</string>
-    <string name="obfs">Obfs</string>
     <string name="protocol_param">Пратакол Param</string>
     <string name="protocol">Пратакол</string>
     <string name="enc_method">Метад шыфравання</string>
@@ -203,7 +201,7 @@
     <string name="vpn_error">%1$s</string>
     <string name="vpn_permission_denied">Адмоўлена ў дазволе на стварэнне службы VPN</string>
     <string name="reboot_required">Не атрымалася запусціць службу VPN. Магчыма, вам спатрэбіцца перазагрузіць прылада.</string>
-    <string name="profile_empty">Калі ласка, абярыце профіль</string>
+    <string name="profile_empty">Калі ласка, абярыце набор праксі</string>
     <string name="connect">Падлучыцца</string>
     <string name="clipboard_empty">Буфер абмену пусты</string>
     <string name="settings">Наладжваньне</string>
@@ -266,9 +264,6 @@
     <string name="plugin">Убудова</string>
     <string name="plugin_configure">Настроіць…</string>
     <string name="plugin_disabled">Адключаны</string>
-    <string name="plugin_unknown">Невядомы убудова %1$s</string>
-    <string name="plugin_untrusted">Папярэджанне: падобна на тое, што гэты убудова не з вядомага надзейнага крыніцы.</string>
-    <string name="plugin_auto_connect_unlock_only">Гэты убудова можа не працаваць з автоподключением</string>
     <string name="proxy_cat">Налады сервера</string>
     <string name="ss_cat">Налады Shadowsocks</string>
     <string name="unsaved_changes_prompt">Ёсць незахаваных змены. Захаваць?</string>
@@ -321,8 +316,6 @@
     <string name="update_when_connected_only_sum">Прадухіліць уцечку IP-адрасы</string>
     <string name="user_agent">Карыстацкі агент</string>
     <string name="confirm">Пацвердзіць</string>
-    <string name="missing_plugin">Адсутны убудова</string>
-    <string name="profile_requiring_plugin">Профіль %1$s патрабуе ўстаноўкі падключаецца модуля %2$s, але ён не знойдзены.</string>
     <string name="action_learn_more">ДАВЕДАЦЦА БОЛЬШ</string>
     <string name="action_download">СКАЧАЦЬ</string>
     <string name="install_from_play_store">Ўсталяваць з Play Store</string>
@@ -360,8 +353,6 @@
     <string name="group_order_origin">Па паходжанні</string>
     <string name="group_order_by_name">Па імені</string>
     <string name="group_order_by_delay">Па затрымцы</string>
-    <string name="shadowsocks_plugin_simple_obfs">Simple Obfs (убудова Shadowsocks для Android)</string>
-    <string name="shadowsocks_plugin_v2ray">V2Ray (убудова Shadowsocks для Android)</string>
     <string name="copy_label">Імя копіі</string>
     <string name="copy_package_name">Капіяваць імя пакета</string>
     <string name="open_app">Адкрыць прыкладанне</string>

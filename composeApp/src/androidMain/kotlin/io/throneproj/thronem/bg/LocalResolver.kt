@@ -1,0 +1,155 @@
+package io.throneproj.thronem.bg
+
+import android.annotation.SuppressLint
+import android.net.DnsResolver
+import android.os.Build
+import android.os.CancellationSignal
+import android.system.ErrnoException
+import androidx.annotation.RequiresApi
+import io.throneproj.thronem.ktx.resumeOnce
+import io.throneproj.thronem.ktx.resumeWithExceptionOnce
+import io.nekohasekai.libbox.ExchangeContext
+import io.nekohasekai.libbox.LocalDNSTransport
+import io.throneproj.thronem.repository.resolveAndroidRepository
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
+import java.net.InetAddress
+import java.net.UnknownHostException
+
+object LocalResolver : LocalDNSTransport {
+
+    private const val RCODE_NXDOMAIN = 3
+
+    @SuppressLint("AnnotateVersionCheck")
+    override fun raw(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+    }
+
+    private val resolverInstance: DnsResolver? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
+            DnsResolver(resolveAndroidRepository().context, null)
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            @Suppress("DEPRECATION")
+            DnsResolver.getInstance()
+        } else {
+            null
+        }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    override fun exchange(ctx: ExchangeContext, message: ByteArray) {
+        val defaultNetwork = DefaultNetworkMonitor.defaultNetwork ?: error("missing default interface")
+        return runBlocking {
+            suspendCancellableCoroutine { continuation ->
+                val signal = CancellationSignal()
+                ctx.onCancel {
+                    signal.cancel()
+                    continuation.resumeWithExceptionOnce(CancellationException())
+                }
+                val callback = object : DnsResolver.Callback<ByteArray> {
+                    override fun onAnswer(answer: ByteArray, rcode: Int) {
+                        if (rcode == 0) {
+                            ctx.rawSuccess(answer)
+                        } else {
+                            ctx.errorCode(rcode)
+                        }
+                        continuation.resumeOnce(Unit)
+                    }
+
+                    override fun onError(error: DnsResolver.DnsException) {
+                        when (val cause = error.cause) {
+                            is ErrnoException -> {
+                                ctx.errnoCode(cause.errno)
+                                continuation.resumeOnce(Unit)
+                                return
+                            }
+                        }
+                        continuation.resumeWithExceptionOnce(error)
+                    }
+                }
+                resolverInstance!!.rawQuery(
+                    defaultNetwork,
+                    message,
+                    DnsResolver.FLAG_NO_RETRY,
+                    Dispatchers.IO.asExecutor(),
+                    signal,
+                    callback,
+                )
+            }
+        }
+    }
+
+    override fun lookup(ctx: ExchangeContext, network: String, domain: String) {
+        val defaultNetwork = DefaultNetworkMonitor.defaultNetwork ?: error("missing default interface")
+        return runBlocking {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                suspendCancellableCoroutine { continuation ->
+                    val signal = CancellationSignal()
+                    ctx.onCancel {
+                        signal.cancel()
+                        continuation.resumeWithExceptionOnce(CancellationException())
+                    }
+                    val callback = object : DnsResolver.Callback<Collection<InetAddress>> {
+                        override fun onAnswer(answer: Collection<InetAddress>, rcode: Int) {
+                            if (rcode == 0) {
+                                ctx.success(
+                                    (answer as Collection<InetAddress?>).mapNotNull { it?.hostAddress }
+                                        .joinToString("\n"),
+                                )
+                            } else {
+                                ctx.errorCode(rcode)
+                            }
+                            continuation.resumeOnce(Unit)
+                        }
+
+                        override fun onError(error: DnsResolver.DnsException) {
+                            when (val cause = error.cause) {
+                                is ErrnoException -> {
+                                    ctx.errnoCode(cause.errno)
+                                    continuation.resumeOnce(Unit)
+                                    return
+                                }
+                            }
+                            continuation.resumeWithExceptionOnce(error)
+                        }
+                    }
+                    val type = when {
+                        network.endsWith("4") -> DnsResolver.TYPE_A
+                        network.endsWith("6") -> DnsResolver.TYPE_AAAA
+                        else -> null
+                    }
+                    if (type != null) {
+                        resolverInstance!!.query(
+                            defaultNetwork,
+                            domain,
+                            type,
+                            DnsResolver.FLAG_NO_RETRY,
+                            Dispatchers.IO.asExecutor(),
+                            signal,
+                            callback,
+                        )
+                    } else {
+                        resolverInstance!!.query(
+                            defaultNetwork,
+                            domain,
+                            DnsResolver.FLAG_NO_RETRY,
+                            Dispatchers.IO.asExecutor(),
+                            signal,
+                            callback,
+                        )
+                    }
+                }
+            } else {
+                val answer = try {
+                    defaultNetwork.getAllByName(domain)
+                } catch (_: UnknownHostException) {
+                    ctx.errorCode(RCODE_NXDOMAIN)
+                    return@runBlocking
+                }
+                ctx.success(answer.mapNotNull { it.hostAddress }.joinToString("\n"))
+            }
+        }
+    }
+}

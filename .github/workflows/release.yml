@@ -19,6 +19,9 @@ on:
 permissions:
   contents: write
 
+env:
+  SINGBOX_VERSION: '1.14.1-lx.8'
+
 jobs:
   android:
     runs-on: ubuntu-26.04
@@ -28,6 +31,11 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+      - name: Download libbox AAR
+        run: |
+          mkdir -p composeApp/libs
+          curl -fL --retry 3 -o composeApp/libs/libbox.aar \
+            "https://github.com/Leadaxe/sing-box-lx/releases/download/v${SINGBOX_VERSION}/libbox-${SINGBOX_VERSION}.aar"
       - uses: ./.github/actions/load-build-versions
       - uses: actions/setup-java@v6
         with:
@@ -37,23 +45,12 @@ jobs:
         with:
           read-only: 'true'
           build-cache-name: release-android
-      - uses: actions/setup-go@v7
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-          cache-dependency-path: 'libcore/go.sum'
-      - name: Setup Android NDK
-        id: setup-ndk
-        uses: nttld/setup-ndk@v1
-        with:
-          ndk-version: ${{ env.ANDROID_NDK_VERSION }}
       - name: Cache route assets
         id: cache-assets
         uses: actions/cache@v6
         with:
           path: composeApp/src/commonMain/composeResources/files/sing-box
-          key: >-
-            assets-v2-${{ env.GEOIP_VERSION }}-${{ env.GEOSITE_VERSION }}-${{ hashFiles('buildScript/lib/assets.sh', 'libcore/cmd/ruleset_generate/**', 'libcore/cmd/internal/shared/**', 'libcore/go.mod', 'libcore/go.sum') }}
+          key: assets-v3-${{ hashFiles('buildScript/lib/assets.sh') }}
       - name: Prepare assets
         if: steps.cache-assets.outputs.cache-hit != 'true'
         run: make assets
@@ -61,17 +58,9 @@ jobs:
         env:
           LOCAL_PROPERTIES: ${{ secrets.LOCAL_PROPERTIES }}
         run: printf '%s' "$LOCAL_PROPERTIES" > local.properties
-      - name: Build Android libcore
-        env:
-          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
-        run: make libcore_android
-      - name: Download Go modules
-        run: cd libcore && go mod download
       - name: Generate about libraries metadata
-        run: make aboutlibraries_go aboutlibraries_android
+        run: make aboutlibraries_android
       - name: Build Android app
-        env:
-          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: make apk
       - uses: actions/upload-artifact@v7
         with:
@@ -85,221 +74,8 @@ jobs:
           if-no-files-found: error
           compression-level: 9
 
-  desktop:
-    name: desktop (${{ matrix.id }})
-    # One cell per GOOS/GOARCH so ProGuard, jlink and libcore bind run in
-    # parallel instead of stacking into a single ~50 minute job. Windows thin
-    # and -jbr packages share one cell (same uberjar, one package.sh run).
-    runs-on: ubuntu-26.04
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - id: linux-amd64
-            target: linux/amd64
-            package: linux
-            formats: "deb,rpm,pacman,tarball,appimage"
-            appimage_runtime: x86_64
-            apt_packages: zstd
-          - id: linux-arm64
-            target: linux/arm64
-            package: linux
-            formats: "deb,rpm,pacman,tarball,appimage"
-            appimage_runtime: aarch64
-            apt_packages: zstd binutils-aarch64-linux-gnu
-          - id: windows-amd64
-            target: windows/amd64
-            package: windows
-            apt_packages: nsis osslsigncode
-          - id: darwin-arm64
-            target: darwin/arm64
-            package: macos
-            apt_packages: xorriso
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-          submodules: recursive
-      - uses: ./.github/actions/load-build-versions
-      - uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: ${{ env.JAVA_VERSION }}
-      - uses: ./.github/actions/gradle-cache
-        with:
-          read-only: 'true'
-          build-cache-name: release-desktop
-      - uses: actions/setup-go@v7
-        with:
-          go-version: ${{ env.GO_VERSION }}
-          cache: true
-          cache-dependency-path: 'libcore/go.sum'
-      - uses: ./.github/actions/setup-zig
-        with:
-          cache-name: desktop-${{ matrix.id }}
-          cache-hash: ${{ hashFiles('launcher/**', 'libcore/shim/**') }}
-      - name: Checkout JNI headers
-        uses: actions/checkout@v7
-        with:
-          repository: Casterlabs/jni-headers
-          ref: ${{ env.JNI_HEADERS_COMMIT }}
-          path: jni-headers
-          sparse-checkout: versions/${{ env.JNI_HEADERS_VERSION }}
-      - name: Checkout macOS SDK
-        if: ${{ matrix.package == 'macos' }}
-        uses: actions/checkout@v7
-        with:
-          repository: alexey-lysiuk/macos-sdk
-          ref: ${{ env.MACOS_SDK_COMMIT }}
-          path: macos-sdk
-          sparse-checkout: MacOSX${{ env.MACOS_SDK_VERSION }}.sdk
-      - name: Install system packaging tools
-        # linux-arm64: binutils-aarch64-linux-gnu so jlink can strip the
-        # AppImage runtime's native libraries with that architecture's objcopy.
-        run: sudo apt-get update && sudo apt-get install -y ${{ matrix.apt_packages }}
-      - name: Cache nfpm
-        if: ${{ matrix.package == 'linux' }}
-        id: cache-nfpm
-        uses: actions/cache@v6
-        with:
-          path: ~/go/bin/nfpm
-          key: nfpm-${{ runner.os }}-${{ runner.arch }}-${{ env.NFPM_VERSION }}
-      - name: Install nfpm
-        if: ${{ matrix.package == 'linux' && steps.cache-nfpm.outputs.cache-hit != 'true' }}
-        run: go install github.com/goreleaser/nfpm/v2/cmd/nfpm@v${NFPM_VERSION}
-      - name: Install AppImage tooling
-        if: ${{ matrix.package == 'linux' }}
-        run: |
-          tools="$RUNNER_TEMP/appimage"
-          mkdir -p "$tools"
-          curl -sSfL -o "$tools/appimagetool" \
-            "https://github.com/AppImage/appimagetool/releases/download/${APPIMAGETOOL_VERSION}/appimagetool-x86_64.AppImage"
-          chmod +x "$tools/appimagetool"
-          curl -sSfL -o "$tools/runtime-${{ matrix.appimage_runtime }}" \
-            "https://github.com/AppImage/type2-runtime/releases/download/${APPIMAGE_RUNTIME_VERSION}/runtime-${{ matrix.appimage_runtime }}"
-          echo "$tools" >> "$GITHUB_PATH"
-          echo "APPIMAGE_TOOLS_DIR=$tools" >> "$GITHUB_ENV"
-      - name: Resolve aarch64 JDK release
-        # Resolved before the cache so the key names an exact build: a new
-        # Temurin patch release busts it instead of being masked by a stale hit.
-        if: ${{ matrix.target == 'linux/arm64' }}
-        run: |
-          asset="$(curl -sSfL "https://api.adoptium.net/v3/assets/latest/${JAVA_VERSION}/hotspot?architecture=aarch64&image_type=jdk&os=linux&vendor=eclipse")"
-          release_name="$(echo "$asset" | jq -r '.[0].release_name')"
-          download_url="$(echo "$asset" | jq -r '.[0].binary.package.link')"
-          if [ -z "$release_name" ] || [ "$release_name" = "null" ]; then
-            echo "Could not resolve an aarch64 Temurin ${JAVA_VERSION} release." >&2
-            exit 1
-          fi
-          echo "AARCH64_JDK_RELEASE=$release_name" >> "$GITHUB_ENV"
-          echo "AARCH64_JDK_URL=$download_url" >> "$GITHUB_ENV"
-          echo "AARCH64_JDK_DIR=$RUNNER_TEMP/jdk-aarch64" >> "$GITHUB_ENV"
-          echo "JLINK_JMODS_AARCH64=$RUNNER_TEMP/jdk-aarch64/jmods" >> "$GITHUB_ENV"
-      - name: Cache aarch64 JDK modules
-        if: ${{ matrix.target == 'linux/arm64' }}
-        id: cache-jdk-aarch64
-        uses: actions/cache@v6
-        with:
-          path: ${{ runner.temp }}/jdk-aarch64
-          key: jdk-aarch64-${{ env.AARCH64_JDK_RELEASE }}
-      - name: Fetch aarch64 JDK modules
-        # jlink links a runtime for the *target* architecture, so the arm64
-        # AppImage needs that architecture's jmods; the host JDK only covers amd64.
-        # Only jmods is unpacked — it is all jlink reads, and the rest of the JDK
-        # would quadruple what the cache carries.
-        if: ${{ matrix.target == 'linux/arm64' && steps.cache-jdk-aarch64.outputs.cache-hit != 'true' }}
-        run: |
-          mkdir -p "$AARCH64_JDK_DIR"
-          curl -sSfL "$AARCH64_JDK_URL" \
-            | tar -C "$AARCH64_JDK_DIR" --strip-components=1 --wildcards -xzf - '*/jmods/*'
-      - name: Cache JetBrains Runtime modules
-        if: ${{ matrix.package == 'windows' }}
-        id: cache-jbr
-        uses: actions/cache@v6
-        with:
-          path: build/jbr
-          key: jbr-${{ env.JBR_VERSION }}-b${{ env.JBR_BUILD }}
-      - name: Fetch JetBrains Runtime modules
-        if: ${{ matrix.package == 'windows' }}
-        run: |
-          jmods="$(./run lib jbr ${{ matrix.target }} | tail -n 1)"
-          echo "JBR_JMODS=$jmods" >> "$GITHUB_ENV"
-      - name: Cache route assets
-        id: cache-assets
-        uses: actions/cache@v6
-        with:
-          path: composeApp/src/commonMain/composeResources/files/sing-box
-          key: >-
-            assets-v2-${{ env.GEOIP_VERSION }}-${{ env.GEOSITE_VERSION }}-${{ hashFiles('buildScript/lib/assets.sh', 'libcore/cmd/ruleset_generate/**', 'libcore/cmd/internal/shared/**', 'libcore/go.mod', 'libcore/go.sum') }}
-      - name: Prepare assets
-        if: steps.cache-assets.outputs.cache-hit != 'true'
-        run: make assets
-      - name: Build desktop libcore
-        # windows/arm64 is temporarily out: androidx sqlite-bundled ships no windows_arm64
-        # libsqliteJni, so the app cannot open its database there.
-        # See https://issuetracker.google.com/issues/426464784
-        run: |
-          if [ "${{ matrix.package }}" = "macos" ]; then
-            make libcore_desktop DESKTOP_TARGETS="${{ matrix.target }}" JNI_INCLUDE="$JNI_INCLUDE" DARWIN_SDK="$MACOS_SDK_PATH"
-          else
-            make libcore_desktop DESKTOP_TARGETS="${{ matrix.target }}" JNI_INCLUDE="$JNI_INCLUDE"
-          fi
-      - name: Download Go modules
-        run: cd libcore && go mod download
-      - name: Generate about libraries metadata
-        run: make aboutlibraries_go aboutlibraries_desktop DESKTOP_TARGET="${{ matrix.target }}"
-      - name: Setup Windows signing
-        if: ${{ matrix.package == 'windows' }}
-        env:
-          WINDOWS_SIGNING_P12_BASE64: ${{ secrets.WINDOWS_SIGNING_P12 }}
-        run: |
-          if [ -z "$WINDOWS_SIGNING_P12_BASE64" ]; then
-            echo "No Windows signing certificate configured, building unsigned packages."
-            echo "WINDOWS_NO_SIGN=1" >> "$GITHUB_ENV"
-          else
-            echo "WINDOWS_NO_SIGN=0" >> "$GITHUB_ENV"
-          fi
-      - name: Build desktop packages
-        env:
-          WINDOWS_SIGNING_P12_BASE64: ${{ secrets.WINDOWS_SIGNING_P12 }}
-          WINDOWS_SIGNING_P12_PASSWORD: ${{ secrets.WINDOWS_SIGNING_P12_PASSWORD }}
-        run: |
-          case "${{ matrix.package }}" in
-            linux)
-              if [ "${{ matrix.target }}" = "linux/arm64" ]; then
-                export JLINK_JMODS="$JLINK_JMODS_AARCH64"
-              else
-                export JLINK_JMODS="$JAVA_HOME/jmods"
-              fi
-              export APPIMAGE_RUNTIME="$APPIMAGE_TOOLS_DIR/runtime-${{ matrix.appimage_runtime }}"
-              make desktop_package_linux DESKTOP_TARGET="${{ matrix.target }}" LINUX_PACKAGE_FORMATS="${{ matrix.formats }}"
-              ;;
-            windows)
-              make desktop_package_windows_jbr DESKTOP_TARGET="${{ matrix.target }}" WINDOWS_NO_SIGN="$WINDOWS_NO_SIGN"
-              ;;
-            macos)
-              make desktop_package_macos DESKTOP_TARGET="${{ matrix.target }}"
-              ;;
-            *)
-              echo "Unknown matrix.package '${{ matrix.package }}'" >&2
-              exit 1
-              ;;
-          esac
-      - uses: actions/upload-artifact@v7
-        with:
-          name: desktop-${{ matrix.id }}
-          path: composeApp/build/compose/packages
-          if-no-files-found: error
-      - uses: actions/upload-artifact@v7
-        with:
-          name: mapping-${{ matrix.id }}
-          path: composeApp/build/compose/mapping/*-mapping.txt
-          if-no-files-found: error
-          compression-level: 9
-
   publish:
-    needs: [android, desktop]
+    needs: [android]
     if: ${{ !inputs.no-publish }}
     runs-on: ubuntu-26.04
     steps:
@@ -307,11 +83,6 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           pattern: android
-          path: release-artifacts
-      - name: Download desktop artifacts
-        uses: actions/download-artifact@v8
-        with:
-          pattern: desktop-*
           path: release-artifacts
       - name: Download R8 mappings
         uses: actions/download-artifact@v8

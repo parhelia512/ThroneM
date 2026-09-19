@@ -1,0 +1,1331 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
+package io.throneproj.thronem.ui
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenuGroup
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.DropdownMenuPopup
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastCoerceIn
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import io.throneproj.thronem.bg.routeGeoDir
+import io.throneproj.thronem.compose.AutoCompleteTextField
+import io.throneproj.thronem.compose.BackHandler
+import io.throneproj.thronem.compose.BoxedVerticalScrollbar
+import io.throneproj.thronem.compose.CapsuleActionButton
+import io.throneproj.thronem.compose.CapsuleTopBar
+import io.throneproj.thronem.compose.DropdownMenuSectionHeader
+import io.throneproj.thronem.compose.DurationTextField
+import io.throneproj.thronem.compose.IconMaskColors
+import io.throneproj.thronem.compose.ListPreference
+import io.throneproj.thronem.compose.MapPreference
+import io.throneproj.thronem.compose.MaskedIcon
+import io.throneproj.thronem.compose.MultiSelectListPreference
+import io.throneproj.thronem.compose.MultilineTextField
+import io.throneproj.thronem.compose.PreferenceCategory
+import io.throneproj.thronem.compose.SimpleIconButton
+import io.throneproj.thronem.compose.SwitchPreference
+import io.throneproj.thronem.compose.TextButton
+import io.throneproj.thronem.compose.TextFieldPreference
+import io.throneproj.thronem.compose.UIntegerTextField
+import io.throneproj.thronem.compose.fadingEdge
+import io.throneproj.thronem.compose.material3.Icon
+import io.throneproj.thronem.compose.material3.Text
+import io.throneproj.thronem.compose.preferenceGroup
+import io.throneproj.thronem.compose.withNavigation
+import io.throneproj.thronem.database.RuleEntity
+import io.throneproj.thronem.database.ThroneDatabase
+import io.throneproj.thronem.fmt.RuleItem
+import io.throneproj.thronem.fmt.SingBoxOptions
+import io.throneproj.thronem.ktx.blankAsNull
+import io.throneproj.thronem.ktx.contentOrUnset
+import io.throneproj.thronem.platform.PlatformInfo
+import io.throneproj.thronem.repository.resolveRepository
+import io.throneproj.thronem.resources.Res
+import io.throneproj.thronem.resources.action_direct
+import io.throneproj.thronem.resources.add_road
+import io.throneproj.thronem.resources.apply
+import io.throneproj.thronem.resources.auto
+import io.throneproj.thronem.resources.cached
+import io.throneproj.thronem.resources.cag_dns
+import io.throneproj.thronem.resources.cancel
+import io.throneproj.thronem.resources.category
+import io.throneproj.thronem.resources.clash_mode
+import io.throneproj.thronem.resources.close
+import io.throneproj.thronem.resources.compare_arrows
+import io.throneproj.thronem.resources.computer_cancel
+import io.throneproj.thronem.resources.copy_success
+import io.throneproj.thronem.resources.custom_config
+import io.throneproj.thronem.resources.delete
+import io.throneproj.thronem.resources.delete_confirm_prompt
+import io.throneproj.thronem.resources.directions_boat
+import io.throneproj.thronem.resources.dns
+import io.throneproj.thronem.resources.dns_only
+import io.throneproj.thronem.resources.domain
+import io.throneproj.thronem.resources.domino_mask
+import io.throneproj.thronem.resources.done
+import io.throneproj.thronem.resources.emoji_symbols
+import io.throneproj.thronem.resources.empty_route
+import io.throneproj.thronem.resources.empty_route_notice
+import io.throneproj.thronem.resources.fallback_outbound
+import io.throneproj.thronem.resources.fiber_smart_record
+import io.throneproj.thronem.resources.fingerprint
+import io.throneproj.thronem.resources.home
+import io.throneproj.thronem.resources.hourglass_top
+import io.throneproj.thronem.resources.layers
+import io.throneproj.thronem.resources.local_airport
+import io.throneproj.thronem.resources.local_bar
+import io.throneproj.thronem.resources.location_on
+import io.throneproj.thronem.resources.manage_search
+import io.throneproj.thronem.resources.menu_route
+import io.throneproj.thronem.resources.monetization_on
+import io.throneproj.thronem.resources.more
+import io.throneproj.thronem.resources.more_vert
+import io.throneproj.thronem.resources.network_expensive
+import io.throneproj.thronem.resources.network_type
+import io.throneproj.thronem.resources.no
+import io.throneproj.thronem.resources.no_changes
+import io.throneproj.thronem.resources.no_changes_notice
+import io.throneproj.thronem.resources.not_set
+import io.throneproj.thronem.resources.ok
+import io.throneproj.thronem.resources.outbound
+import io.throneproj.thronem.resources.override_address
+import io.throneproj.thronem.resources.override_port
+import io.throneproj.thronem.resources.package_name_regex
+import io.throneproj.thronem.resources.pin_drop
+import io.throneproj.thronem.resources.public_icon
+import io.throneproj.thronem.resources.push_pin
+import io.throneproj.thronem.resources.question_mark
+import io.throneproj.thronem.resources.route_action
+import io.throneproj.thronem.resources.route_block
+import io.throneproj.thronem.resources.route_bridge
+import io.throneproj.thronem.resources.route_bypass
+import io.throneproj.thronem.resources.route_invert
+import io.throneproj.thronem.resources.route_name
+import io.throneproj.thronem.resources.route_options
+import io.throneproj.thronem.resources.route_proxy
+import io.throneproj.thronem.resources.router
+import io.throneproj.thronem.resources.segment
+import io.throneproj.thronem.resources.select_profile
+import io.throneproj.thronem.resources.settings
+import io.throneproj.thronem.resources.shuffle
+import io.throneproj.thronem.resources.sniff
+import io.throneproj.thronem.resources.sniff_timeout
+import io.throneproj.thronem.resources.timelapse
+import io.throneproj.thronem.resources.timer
+import io.throneproj.thronem.resources.tls_fragment
+import io.throneproj.thronem.resources.tls_fragment_fallback_delay
+import io.throneproj.thronem.resources.tls_record_fragment
+import io.throneproj.thronem.resources.tls_spoof
+import io.throneproj.thronem.resources.tls_spoof_method
+import io.throneproj.thronem.resources.unsaved_changes_prompt
+import io.throneproj.thronem.resources.warning
+import io.throneproj.thronem.resources.warning_amber
+import io.throneproj.thronem.resources.wifi
+import io.throneproj.thronem.resources.wifi_find
+import io.throneproj.thronem.results.ResultEffect
+import io.throneproj.thronem.ui.jsoneditor.ConfigSchema
+import io.throneproj.thronem.ui.profile.tlsSpoofMethod
+import io.github.oikvpqya.compose.fastscroller.material3.defaultMaterialScrollbarStyle
+import io.github.oikvpqya.compose.fastscroller.rememberScrollbarAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import me.zhanghai.compose.preference.ListPreferenceType
+import me.zhanghai.compose.preference.ProvidePreferenceLocals
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
+import java.io.File
+import kotlin.random.Random
+
+private const val KEY_ACTION_OPTIONS = "action_options"
+private const val CUSTOM_OUTBOUND_OPTION = -5L // Placeholder
+
+// If too big, the performance is low and no one will check it patiently.
+private const val RULE_SET_SUGGESTION_LIMIT = 64
+
+@ExperimentalMaterial3Api
+@Composable
+internal fun RouteSettingsScreen(
+    routeId: Long,
+    initialState: RouteSettingsUiState?,
+    onBackPress: () -> Unit,
+    onSaved: () -> Unit,
+    onOpenProfileSelect: OpenProfilePicker,
+    onOpenAppList: (NavRoutes.AppList) -> Unit,
+    onOpenConfigEditor: (NavRoutes.ConfigEditor) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: RouteSettingsViewModel = viewModel {
+        RouteSettingsViewModel(routeId, initialState)
+    },
+) {
+    val isDirty by viewModel.isDirty.collectAsState()
+    var showBackAlert by remember { mutableStateOf(false) }
+    BackHandler(enabled = isDirty) { showBackAlert = true }
+
+    val windowInsets = WindowInsets.safeDrawing
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val snackbar = LocalSnackbarEmitter.current
+
+    var showExpandedMenu by remember { mutableStateOf(false) }
+    var showDeleteConfirm by remember { mutableStateOf(false) }
+    var showEmptyRouteAlert by remember { mutableStateOf(false) }
+    var showNoChangesAlert by remember { mutableStateOf(false) }
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    fun saveAndExit() {
+        viewModel.save()
+        onSaved()
+    }
+
+    val resultKeyNumber = rememberSaveable { routeId.takeIf { it >= 0 } ?: Random.nextLong() }
+
+    val appListResultKey = remember { "app-list-${resultKeyNumber}" }
+    val configEditResultKey = remember { "route-config-${resultKeyNumber}" }
+    val dnsConfigEditResultKey = remember { "route-dns-config-${resultKeyNumber}" }
+    ResultEffect<Set<String>>(resultKey = appListResultKey) { result ->
+        viewModel.setPackages(result)
+    }
+    ResultEffect<String?>(resultKey = configEditResultKey) { result ->
+        if (result == null) return@ResultEffect
+        viewModel.setCustomConfig(result)
+    }
+    ResultEffect<String?>(resultKey = dnsConfigEditResultKey) { result ->
+        if (result == null) return@ResultEffect
+        viewModel.setCustomDnsConfig(result)
+    }
+
+    Scaffold(
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            CapsuleTopBar(
+                navigationIcon = {
+                    SimpleIconButton(
+                        imageVector = vectorResource(Res.drawable.close),
+                        contentDescription = stringResource(Res.string.close),
+                    ) {
+                        if (isDirty) {
+                            showBackAlert = true
+                        } else {
+                            onBackPress()
+                        }
+                    }
+                },
+                title = { Text(stringResource(Res.string.menu_route)) },
+                actions = {
+                    CapsuleActionButton {
+                        SimpleIconButton(
+                            imageVector = vectorResource(Res.drawable.delete),
+                            contentDescription = stringResource(Res.string.delete),
+                            onClick = { showDeleteConfirm = true },
+                        )
+                    }
+                    CapsuleActionButton {
+                        SimpleIconButton(
+                            imageVector = vectorResource(Res.drawable.done),
+                            contentDescription = stringResource(Res.string.apply),
+                        ) {
+                            if (uiState.needsRules()) {
+                                showEmptyRouteAlert = true
+                            } else if (isDirty) {
+                                saveAndExit()
+                            } else {
+                                showNoChangesAlert = true
+                            }
+                        }
+                    }
+
+                    Box {
+                        CapsuleActionButton {
+                            SimpleIconButton(
+                                imageVector = vectorResource(Res.drawable.more_vert),
+                                contentDescription = stringResource(Res.string.more),
+                            ) {
+                                showExpandedMenu = true
+                            }
+                        }
+                        DropdownMenuPopup(
+                            expanded = showExpandedMenu,
+                            onDismissRequest = { showExpandedMenu = false },
+                        ) {
+                            DropdownMenuGroup(
+                                shapes = MenuDefaults.groupShape(0, 3),
+                            ) {
+                                DropdownMenuItem(
+                                    checked = uiState.invert,
+                                    onCheckedChange = viewModel::setInvert,
+                                    text = { Text(stringResource(Res.string.route_invert)) },
+                                    shapes = MenuDefaults.itemShapes(),
+                                )
+                            }
+                            Spacer(Modifier.height(MenuDefaults.GroupSpacing))
+                            DropdownMenuGroup(
+                                shapes = MenuDefaults.groupShape(1, 3),
+                            ) {
+                                DropdownMenuSectionHeader(stringResource(Res.string.custom_config))
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(Res.string.menu_route)) },
+                                    onClick = {
+                                        showExpandedMenu = false
+                                        onOpenConfigEditor(
+                                            NavRoutes.ConfigEditor(
+                                                initialText = uiState.customConfig,
+                                                resultKey = configEditResultKey,
+                                            ),
+                                        )
+                                    },
+                                    shape = MenuDefaults.itemShape(0, 2).shape,
+                                )
+                                DropdownMenuItem(
+                                    text = { Text(stringResource(Res.string.cag_dns)) },
+                                    onClick = {
+                                        showExpandedMenu = false
+                                        onOpenConfigEditor(
+                                            NavRoutes.ConfigEditor(
+                                                initialText = uiState.customDnsConfig,
+                                                resultKey = dnsConfigEditResultKey,
+                                                schema = ConfigSchema.DNS_RULE,
+                                            ),
+                                        )
+                                    },
+                                    shape = MenuDefaults.itemShape(1, 2).shape,
+                                )
+                            }
+                            Spacer(Modifier.height(MenuDefaults.GroupSpacing))
+                            DropdownMenuGroup(
+                                shapes = MenuDefaults.groupShape(2, 3),
+                            ) {
+                                DropdownMenuItem(
+                                    selected = uiState.dnsOnly,
+                                    onClick = {
+                                        showExpandedMenu = false
+                                        viewModel.setDnsOnly(!uiState.dnsOnly)
+                                    },
+                                    text = { Text(stringResource(Res.string.dns_only)) },
+                                    shapes = MenuDefaults.itemShape(0, 1),
+                                )
+                            }
+                        }
+                    }
+                },
+                windowInsets = windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+                scrollBehavior = scrollBehavior,
+            )
+        },
+    ) { innerPadding ->
+        ProvidePreferenceLocals {
+            RouteSettings(
+                paddings = innerPadding,
+                uiState = uiState,
+                viewModel = viewModel,
+                onSelectOutboundProfile = { selected ->
+                    onOpenProfileSelect(selected.takeIf { it > 0 }) { id ->
+                        viewModel.setOutbound(id)
+                    }
+                },
+                onSelectApps = { packages ->
+                    if (PlatformInfo.isAndroid) {
+                        onOpenAppList(
+                            NavRoutes.AppList(
+                                initialPackages = packages,
+                                resultKey = appListResultKey,
+                            ),
+                        )
+                    } else {
+                        viewModel.setPackages(packages)
+                    }
+                },
+                onRuleSetCopy = {
+                    snackbar.show(StringOrRes.Res(Res.string.copy_success))
+                },
+            )
+        }
+    }
+
+    if (showBackAlert) {
+        AlertDialog(
+            onDismissRequest = { showBackAlert = false },
+            confirmButton = {
+                TextButton(stringResource(Res.string.ok)) {
+                    saveAndExit()
+                }
+            },
+            dismissButton = {
+                TextButton(stringResource(Res.string.no)) {
+                    onBackPress()
+                }
+            },
+            icon = { Icon(vectorResource(Res.drawable.question_mark), null) },
+            title = { Text(stringResource(Res.string.unsaved_changes_prompt)) },
+        )
+    }
+    if (showDeleteConfirm) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirm = false },
+            confirmButton = {
+                TextButton(stringResource(Res.string.ok)) {
+                    viewModel.deleteRule()
+                    onBackPress()
+                }
+            },
+            dismissButton = {
+                TextButton(stringResource(Res.string.cancel)) {
+                    showDeleteConfirm = false
+                }
+            },
+            icon = { Icon(vectorResource(Res.drawable.warning), null) },
+            title = { Text(stringResource(Res.string.delete_confirm_prompt)) },
+        )
+    }
+    if (showEmptyRouteAlert) {
+        AlertDialog(
+            onDismissRequest = { showEmptyRouteAlert = false },
+            confirmButton = {
+                TextButton(stringResource(Res.string.ok)) {
+                    showEmptyRouteAlert = false
+                }
+            },
+            icon = { Icon(vectorResource(Res.drawable.warning_amber), null) },
+            title = { Text(stringResource(Res.string.empty_route)) },
+            text = { Text(stringResource(Res.string.empty_route_notice)) },
+        )
+    }
+    if (showNoChangesAlert) {
+        AlertDialog(
+            onDismissRequest = { showNoChangesAlert = false },
+            confirmButton = {
+                TextButton(stringResource(Res.string.ok)) {
+                    showNoChangesAlert = false
+                }
+            },
+            icon = { Icon(vectorResource(Res.drawable.warning_amber), null) },
+            title = { Text(stringResource(Res.string.no_changes)) },
+            text = { Text(stringResource(Res.string.no_changes_notice)) },
+        )
+    }
+}
+
+@Composable
+private fun RouteSettings(
+    paddings: PaddingValues,
+    uiState: RouteSettingsUiState,
+    viewModel: RouteSettingsViewModel,
+    onSelectOutboundProfile: (Long) -> Unit,
+    onSelectApps: (Set<String>) -> Unit,
+    onRuleSetCopy: suspend () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val geoDir = remember(resolveRepository().externalAssetsDir) {
+        routeGeoDir(resolveRepository().externalAssetsDir).takeIf { it.isDirectory }
+    }
+
+    val listState = rememberLazyListState()
+    val contentPadding = paddings.withNavigation()
+    Row(modifier = modifier.fillMaxSize()) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                .fadingEdge(
+                    scrollableState = listState,
+                    fadeStart = true,
+                    fadeEnd = true,
+                ),
+            contentPadding = contentPadding,
+        ) {
+            val outbounds = buildList {
+                add(RuleEntity.OUTBOUND_PROXY)
+                add(RuleEntity.OUTBOUND_DIRECT)
+                add(RuleEntity.OUTBOUND_BLOCK)
+                if (!PlatformInfo.isAndroid) {
+                    add(RuleEntity.OUTBOUND_BRIDGE)
+                }
+                add(CUSTOM_OUTBOUND_OPTION)
+            }
+
+            preferenceGroup(key = "basic") {
+                TextFieldPreference(
+                    value = uiState.name,
+                    onValueChange = { viewModel.setName(it) },
+                    title = { Text(stringResource(Res.string.route_name)) },
+                    textToValue = { it },
+                    icon = {
+                        MaskedIcon(
+                            resource = Res.drawable.emoji_symbols,
+                            color = IconMaskColors.IconLightYellow,
+                        )
+                    },
+                    summary = { Text(contentOrUnset(uiState.name)) },
+                    valueToText = { it },
+                )
+                AppSelectPreference(uiState.packages, onSelectApps)
+                if (PlatformInfo.isAndroid) {
+                    TextFieldPreference(
+                        value = uiState.packageNameRegex,
+                        onValueChange = { viewModel.setPackageNameRegex(it) },
+                        title = { Text(stringResource(Res.string.package_name_regex)) },
+                        textToValue = { it },
+                        icon = {
+                            MaskedIcon(
+                                resource = Res.drawable.fiber_smart_record,
+                                color = IconMaskColors.IconCyan,
+                            )
+                        },
+                        summary = { Text(contentOrUnset(uiState.packageNameRegex)) },
+                        valueToText = { it },
+                    )
+                }
+                MultiSelectListPreference(
+                    value = uiState.networkType,
+                    onValueChange = { viewModel.setNetworkType(it) },
+                    values = networkTypes,
+                    title = { Text(stringResource(Res.string.network_type)) },
+                    icon = {
+                        MaskedIcon(
+                            resource = Res.drawable.public_icon,
+                            color = IconMaskColors.IconLightBlue,
+                        )
+                    },
+                    summary = {
+                        val text = if (uiState.networkType.isEmpty()) {
+                            stringResource(Res.string.not_set)
+                        } else {
+                            uiState.networkType.joinToString("\n")
+                        }
+                        Text(text)
+                    },
+                    valueToText = { AnnotatedString(it) },
+                )
+                ListPreference(
+                    value = uiState.action,
+                    onValueChange = { viewModel.setAction(it) },
+                    values = buildList {
+                        add(SingBoxOptions.ACTION_ROUTE)
+                        if (PlatformInfo.isLinux) {
+                            add(SingBoxOptions.ACTION_BYPASS)
+                        }
+                        add(SingBoxOptions.ACTION_ROUTE_OPTIONS)
+                        add(SingBoxOptions.ACTION_SNIFF)
+                        add(SingBoxOptions.ACTION_RESOLVE)
+                        add(SingBoxOptions.ACTION_HIJACK_DNS)
+                        add(SingBoxOptions.ACTION_REJECT)
+                    },
+                    title = { Text(stringResource(Res.string.route_action)) },
+                    icon = {
+                        MaskedIcon(
+                            resource = Res.drawable.shuffle,
+                            color = IconMaskColors.IconLavender,
+                        )
+                    },
+                    summary = { Text(contentOrUnset(uiState.action)) },
+                    type = ListPreferenceType.DROPDOWN_MENU,
+                    valueToText = { AnnotatedString(it) },
+                )
+            }
+
+            item("category_settings") {
+                PreferenceCategory(text = { Text(stringResource(Res.string.settings)) })
+            }
+            preferenceGroup {
+                TextFieldPreference(
+                    value = uiState.domains,
+                    onValueChange = { viewModel.setDomains(it) },
+                    title = { Text("domain") },
+                    textToValue = { it },
+                    icon = {
+                        MaskedIcon(
+                            Res.drawable.domain,
+                            color = IconMaskColors.IconCyan,
+                        )
+                    },
+                    summary = { Text(contentOrUnset(uiState.domains)) },
+                    valueToText = { it },
+                    textField = { value, onValueChange, onOk ->
+                        RuleSetAutoCompleteTextField(
+                            value = value,
+                            onValueChange = onValueChange,
+                            onOk = onOk,
+                            geoDir = geoDir,
+                            onCopy = onRuleSetCopy,
+                        )
+                    },
+                )
+                TextFieldPreference(
+                    value = uiState.ip,
+                    onValueChange = { viewModel.setIp(it) },
+                    title = { Text("ip") },
+                    textToValue = { it },
+                    icon = {
+                        MaskedIcon(
+                            Res.drawable.add_road,
+                            color = IconMaskColors.IconLightBlue,
+                        )
+                    },
+                    summary = { Text(contentOrUnset(uiState.ip)) },
+                    valueToText = { it },
+                    textField = { value, onValueChange, onOk ->
+                        RuleSetAutoCompleteTextField(
+                            value = value,
+                            onValueChange = onValueChange,
+                            onOk = onOk,
+                            geoDir = geoDir,
+                            onCopy = onRuleSetCopy,
+                        )
+                    },
+                )
+                TextFieldPreference(
+                    value = uiState.port,
+                    onValueChange = { viewModel.setPort(it) },
+                    title = { Text("port") },
+                    textToValue = { it },
+                    icon = {
+                        MaskedIcon(
+                            Res.drawable.directions_boat,
+                            color = IconMaskColors.IconLightOrange,
+                        )
+                    },
+                    summary = { Text(contentOrUnset(uiState.port)) },
+                    valueToText = { it },
+                    textField = { value, onValueChange, onOk ->
+                        MultilineTextField(value, onValueChange, onOk)
+                    },
+                )
+                TextFieldPreference(
+                    value = uiState.sourcePort,
+                    onValueChange = { viewModel.setSourcePort(it) },
+                    title = { Text("sourcePort") },
+                    textToValue = { it },
+                    icon = {
+                        MaskedIcon(
+                            Res.drawable.home,
+                            color = IconMaskColors.IconLavender,
+                        )
+                    },
+                    summary = { Text(contentOrUnset(uiState.sourcePort)) },
+                    valueToText = { it },
+                    textField = { value, onValueChange, onOk ->
+                        MultilineTextField(value, onValueChange, onOk)
+                    },
+                )
+                MultiSelectListPreference(
+                    value = uiState.network,
+                    onValueChange = { viewModel.setNetwork(it) },
+                    values = listOf(
+                        SingBoxOptions.NetworkTCP,
+                        SingBoxOptions.NetworkUDP,
+                        SingBoxOptions.NetworkICMP,
+                    ),
+                    title = { Text("network") },
+                    icon = {
+                        MaskedIcon(
+                            Res.drawable.compare_arrows,
+                            color = IconMaskColors.IconLightGreen,
+                        )
+                    },
+                    summary = {
+                        val text = if (uiState.network.isEmpty()) {
+                            stringResource(Res.string.not_set)
+                        } else {
+                            uiState.network.joinToString("\n")
+                        }
+                        Text(text)
+                    },
+                    valueToText = { AnnotatedString(it) },
+                )
+                TextFieldPreference(
+                    value = uiState.source,
+                    onValueChange = { viewModel.setSource(it) },
+                    title = { Text("source") },
+                    textToValue = { it },
+                    icon = {
+                        MaskedIcon(
+                            Res.drawable.local_bar,
+                            color = IconMaskColors.IconCoral,
+                        )
+                    },
+                    summary = { Text(contentOrUnset(uiState.source)) },
+                    valueToText = { it },
+                    textField = { value, onValueChange, onOk ->
+                        MultilineTextField(value, onValueChange, onOk)
+                    },
+                )
+                MultiSelectListPreference(
+                    value = uiState.protocol,
+                    onValueChange = { viewModel.setProtocol(it) },
+                    values = sniffers,
+                    title = { Text("protocol") },
+                    icon = {
+                        MaskedIcon(
+                            Res.drawable.layers,
+                            color = IconMaskColors.IconWarmGray,
+                        )
+                    },
+                    summary = {
+                        val text = if (uiState.protocol.isEmpty()) {
+                            stringResource(Res.string.not_set)
+                        } else {
+                            uiState.protocol.joinToString("\n")
+                        }
+                        Text(text)
+                    },
+                    valueToText = { AnnotatedString(it) },
+                )
+                TextFieldPreference(
+                    value = uiState.client,
+                    onValueChange = { viewModel.setClient(it) },
+                    title = { Text("client") },
+                    textToValue = { it },
+                    icon = {
+                        MaskedIcon(
+                            Res.drawable.fingerprint,
+                            color = IconMaskColors.IconLightPink,
+                        )
+                    },
+                    summary = { Text(contentOrUnset(uiState.client)) },
+                    valueToText = { it },
+                    textField = { value, onValueChange, onOk ->
+                        MultilineTextField(value, onValueChange, onOk)
+                    },
+                )
+                val showWifi = uiState.networkType.contains(SingBoxOptions.NETWORK_TYPE_WIFI)
+                if (showWifi) {
+                    TextFieldPreference(
+                        value = uiState.ssid,
+                        onValueChange = { viewModel.setSsid(it) },
+                        title = { Text("SSID") },
+                        textToValue = { it },
+                        icon = {
+                            MaskedIcon(
+                                Res.drawable.wifi,
+                                color = IconMaskColors.IconLightBlue,
+                            )
+                        },
+                        summary = { Text(contentOrUnset(uiState.ssid)) },
+                        valueToText = { it },
+                        textField = { value, onValueChange, onOk ->
+                            MultilineTextField(value, onValueChange, onOk)
+                        },
+                    )
+                    TextFieldPreference(
+                        value = uiState.bssid,
+                        onValueChange = { viewModel.setBssid(it) },
+                        title = { Text("BSSID") },
+                        textToValue = { it },
+                        icon = {
+                            MaskedIcon(
+                                Res.drawable.wifi_find,
+                                color = IconMaskColors.IconCyan,
+                            )
+                        },
+                        summary = { Text(contentOrUnset(uiState.bssid)) },
+                        valueToText = { it },
+                        textField = { value, onValueChange, onOk ->
+                            MultilineTextField(value, onValueChange, onOk)
+                        },
+                    )
+                }
+                TextFieldPreference(
+                    value = uiState.clashMode,
+                    onValueChange = { viewModel.setClashMode(it) },
+                    title = { Text(stringResource(Res.string.clash_mode)) },
+                    textToValue = { it },
+                    icon = {
+                        MaskedIcon(
+                            Res.drawable.category,
+                            color = IconMaskColors.IconLightYellow,
+                        )
+                    },
+                    summary = { Text(contentOrUnset(uiState.clashMode)) },
+                    valueToText = { it },
+                    textField = { value, onValueChange, onOk ->
+                        MultilineTextField(value, onValueChange, onOk)
+                    },
+                )
+                SwitchPreference(
+                    value = uiState.networkIsExpensive,
+                    onValueChange = { viewModel.setNetworkIsExpensive(it) },
+                    title = { Text(stringResource(Res.string.network_expensive)) },
+                    icon = {
+                        MaskedIcon(
+                            Res.drawable.monetization_on,
+                            color = IconMaskColors.IconCoral,
+                        )
+                    },
+                )
+                MapPreference(
+                    value = uiState.networkInterfaceAddress,
+                    keys = LinkedHashSet(networkTypes),
+                    onValueChange = { viewModel.setNetworkInterfaceAddress(it) },
+                    displayKey = { it },
+                    valueToText = { it },
+                    textToValue = { it },
+                    title = { Text("networkInterfaceAddress") },
+                    icon = {
+                        MaskedIcon(
+                            Res.drawable.local_airport,
+                            color = IconMaskColors.IconLightGreen,
+                        )
+                    },
+                    summary = { Text(uiState.networkInterfaceAddress.toString()) },
+                )
+            }
+
+            when (uiState.action) {
+                "", SingBoxOptions.ACTION_ROUTE -> {
+                    item(KEY_ACTION_OPTIONS) {
+                        PreferenceCategory(text = { Text(stringResource(Res.string.menu_route)) })
+                    }
+                    preferenceGroup {
+                        ListPreference(
+                            value = uiState.outbound,
+                            onValueChange = {
+                                when (it) {
+                                    RuleEntity.OUTBOUND_PROXY,
+                                    RuleEntity.OUTBOUND_DIRECT,
+                                    RuleEntity.OUTBOUND_BLOCK,
+                                    RuleEntity.OUTBOUND_BRIDGE,
+                                        -> viewModel.setOutbound(it)
+
+                                    else -> onSelectOutboundProfile(uiState.outbound)
+                                }
+                            },
+                            values = outbounds,
+                            title = { Text(stringResource(Res.string.outbound)) },
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.router,
+                                    color = IconMaskColors.IconLightBlue,
+                                )
+                            },
+                            summary = {
+                                val text = when (uiState.outbound) {
+                                    RuleEntity.OUTBOUND_PROXY -> stringResource(Res.string.route_proxy)
+                                    RuleEntity.OUTBOUND_DIRECT -> stringResource(Res.string.route_bypass)
+                                    RuleEntity.OUTBOUND_BLOCK -> stringResource(Res.string.route_block)
+                                    RuleEntity.OUTBOUND_BRIDGE -> stringResource(Res.string.route_bridge)
+                                    else -> runBlocking { ThroneDatabase.proxyDao.getById(uiState.outbound) }
+                                        ?.displayName()
+                                        ?: stringResource(Res.string.not_set)
+                                }
+                                Text(text)
+                            },
+                            type = ListPreferenceType.DROPDOWN_MENU,
+                            valueToText = {
+                                val id = when (it) {
+                                    RuleEntity.OUTBOUND_PROXY -> Res.string.route_proxy
+                                    RuleEntity.OUTBOUND_DIRECT -> Res.string.route_bypass
+                                    RuleEntity.OUTBOUND_BLOCK -> Res.string.route_block
+                                    RuleEntity.OUTBOUND_BRIDGE -> Res.string.route_bridge
+                                    else -> Res.string.select_profile
+                                }
+                                AnnotatedString(stringResource(id))
+                            },
+                        )
+                    }
+                }
+
+                SingBoxOptions.ACTION_BYPASS -> {
+                    item(KEY_ACTION_OPTIONS) {
+                        PreferenceCategory(text = { Text(SingBoxOptions.ACTION_BYPASS) })
+                    }
+                    preferenceGroup {
+                        ListPreference(
+                            value = uiState.outbound,
+                            onValueChange = {
+                                when (it) {
+                                    RuleEntity.OUTBOUND_PROXY,
+                                    RuleEntity.OUTBOUND_DIRECT,
+                                    RuleEntity.OUTBOUND_BLOCK,
+                                    RuleEntity.OUTBOUND_BRIDGE,
+                                        -> viewModel.setOutbound(it)
+
+                                    else -> onSelectOutboundProfile(uiState.outbound)
+                                }
+                            },
+                            values = outbounds,
+                            title = { Text(stringResource(Res.string.fallback_outbound)) },
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.router,
+                                    color = IconMaskColors.IconLightBlue,
+                                )
+                            },
+                            summary = {
+                                val text = when (uiState.outbound) {
+                                    RuleEntity.OUTBOUND_PROXY -> stringResource(Res.string.route_proxy)
+                                    RuleEntity.OUTBOUND_DIRECT -> stringResource(Res.string.action_direct)
+                                    RuleEntity.OUTBOUND_BLOCK -> stringResource(Res.string.route_block)
+                                    RuleEntity.OUTBOUND_BRIDGE -> stringResource(Res.string.route_bridge)
+                                    else -> runBlocking { ThroneDatabase.proxyDao.getById(uiState.outbound) }
+                                        ?.displayName()
+                                        ?: stringResource(Res.string.not_set)
+                                }
+                                Text(text)
+                            },
+                            type = ListPreferenceType.DROPDOWN_MENU,
+                            valueToText = {
+                                val id = when (it) {
+                                    RuleEntity.OUTBOUND_PROXY -> Res.string.route_proxy
+                                    RuleEntity.OUTBOUND_DIRECT -> Res.string.action_direct
+                                    RuleEntity.OUTBOUND_BLOCK -> Res.string.route_block
+                                    RuleEntity.OUTBOUND_BRIDGE -> Res.string.route_bridge
+                                    else -> Res.string.select_profile
+                                }
+                                AnnotatedString(stringResource(id))
+                            },
+                        )
+                    }
+                }
+
+                SingBoxOptions.ACTION_ROUTE_OPTIONS -> {
+                    item(KEY_ACTION_OPTIONS) {
+                        PreferenceCategory(text = { Text(stringResource(Res.string.route_options)) })
+                    }
+                    preferenceGroup {
+                        TextFieldPreference(
+                            value = uiState.overrideAddress,
+                            onValueChange = { viewModel.setOverrideAddress(it) },
+                            title = { Text(stringResource(Res.string.override_address)) },
+                            textToValue = { it },
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.location_on,
+                                    color = IconMaskColors.IconCoral,
+                                )
+                            },
+                            summary = { Text(contentOrUnset(uiState.overrideAddress)) },
+                            valueToText = { it },
+                        )
+                        TextFieldPreference(
+                            value = uiState.overridePort,
+                            onValueChange = { viewModel.setOverridePort(it) },
+                            title = { Text(stringResource(Res.string.override_port)) },
+                            textToValue = { it.toIntOrNull() ?: 0 },
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.pin_drop,
+                                    color = IconMaskColors.IconLightOrange,
+                                )
+                            },
+                            summary = { Text(contentOrUnset(uiState.overridePort)) },
+                            textField = { value, onValueChange, onOk ->
+                                UIntegerTextField(value, onValueChange, onOk)
+                            },
+                        )
+                        SwitchPreference(
+                            value = uiState.tlsFragment,
+                            onValueChange = { viewModel.setTlsFragment(it) },
+                            title = { Text(stringResource(Res.string.tls_fragment)) },
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.segment,
+                                    color = IconMaskColors.IconLightYellow,
+                                )
+                            },
+                        )
+                        TextFieldPreference(
+                            value = uiState.tlsFragmentFallbackDelay,
+                            onValueChange = { viewModel.setTlsFragmentFallbackDelay(it) },
+                            title = { Text(stringResource(Res.string.tls_fragment_fallback_delay)) },
+                            textToValue = { it },
+                            enabled = uiState.tlsFragment,
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.hourglass_top,
+                                    color = IconMaskColors.IconLightBlue,
+                                )
+                            },
+                            summary = { Text(contentOrUnset(uiState.tlsFragmentFallbackDelay)) },
+                            textField = { value, onValueChange, onOk ->
+                                DurationTextField(value, onValueChange, onOk)
+                            },
+                        )
+                        SwitchPreference(
+                            value = uiState.tlsRecordFragment,
+                            onValueChange = { viewModel.setTlsRecordFragment(it) },
+                            title = { Text(stringResource(Res.string.tls_record_fragment)) },
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.fiber_smart_record,
+                                    color = IconMaskColors.IconLavender,
+                                )
+                            },
+                        )
+                        if (!PlatformInfo.isAndroid) {
+                            TextFieldPreference(
+                                value = uiState.tlsSpoof,
+                                onValueChange = { viewModel.setTlsSpoof(it) },
+                                title = { Text(stringResource(Res.string.tls_spoof)) },
+                                textToValue = { it },
+                                icon = {
+                                    MaskedIcon(
+                                        Res.drawable.domino_mask,
+                                        color = IconMaskColors.IconWarmGray,
+                                    )
+                                },
+                                summary = { Text(contentOrUnset(uiState.tlsSpoof)) },
+                                valueToText = { it },
+                            )
+                            ListPreference(
+                                value = uiState.tlsSpoofMethod,
+                                values = tlsSpoofMethod,
+                                onValueChange = { viewModel.setTlsSpoofMethod(it) },
+                                title = { Text(stringResource(Res.string.tls_spoof_method)) },
+                                enabled = uiState.tlsSpoof.isNotBlank(),
+                                icon = {
+                                    MaskedIcon(
+                                        Res.drawable.computer_cancel,
+                                        color = IconMaskColors.IconCyan,
+                                    )
+                                },
+                                summary = { Text(contentOrUnset(uiState.tlsSpoofMethod)) },
+                                type = ListPreferenceType.DROPDOWN_MENU,
+                                valueToText = { AnnotatedString(it) },
+                            )
+                        }
+                    }
+                }
+
+                SingBoxOptions.ACTION_RESOLVE -> {
+                    item(KEY_ACTION_OPTIONS) {
+                        PreferenceCategory(text = { Text("Resolve") })
+                    }
+                    preferenceGroup {
+                        ListPreference(
+                            value = uiState.resolveStrategy,
+                            onValueChange = { viewModel.setResolveStrategy(it) },
+                            values = listOf(
+                                "",
+                                SingBoxOptions.STRATEGY_PREFER_IPV6,
+                                SingBoxOptions.STRATEGY_PREFER_IPV4,
+                                SingBoxOptions.STRATEGY_IPV4_ONLY,
+                                SingBoxOptions.STRATEGY_IPV6_ONLY,
+                            ),
+                            title = { Text("Resolve Strategy") },
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.dns,
+                                    color = IconMaskColors.IconLightBlue,
+                                )
+                            },
+                            summary = {
+                                val text = uiState.resolveStrategy.blankAsNull()
+                                    ?: stringResource(Res.string.auto)
+                                Text(text)
+                            },
+                            type = ListPreferenceType.DROPDOWN_MENU,
+                            valueToText = { AnnotatedString(it) },
+                        )
+                        SwitchPreference(
+                            value = uiState.resolveDisableCache,
+                            onValueChange = { viewModel.setResolveDisableCache(it) },
+                            title = { Text("Disable Cache") },
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.cached,
+                                    color = IconMaskColors.IconWarmGray,
+                                )
+                            },
+                        )
+                        TextFieldPreference(
+                            value = uiState.resolveRewriteTTL,
+                            onValueChange = { viewModel.setResolveRewriteTTL(it) },
+                            title = { Text("Rewrite TTL") },
+                            textToValue = { it.toIntOrNull() ?: 0 },
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.timer,
+                                    color = IconMaskColors.IconLightOrange,
+                                )
+                            },
+                            summary = {
+                                val text =
+                                    uiState.resolveRewriteTTL.takeIf { it > 0 }?.toString()
+                                        ?: stringResource(Res.string.not_set)
+                                Text(text)
+                            },
+                            textField = { value, onValueChange, onOk ->
+                                UIntegerTextField(value, onValueChange, onOk)
+                            },
+                        )
+                        TextFieldPreference(
+                            value = uiState.resolveClientSubnet,
+                            onValueChange = { viewModel.setResolveClientSubnet(it) },
+                            title = { Text("Client Subnet") },
+                            textToValue = { it },
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.push_pin,
+                                    color = IconMaskColors.IconCoral,
+                                )
+                            },
+                            summary = { Text(contentOrUnset(uiState.resolveClientSubnet)) },
+                            valueToText = { it },
+                        )
+                    }
+                }
+
+                SingBoxOptions.ACTION_SNIFF -> {
+                    item(KEY_ACTION_OPTIONS) {
+                        PreferenceCategory(text = { Text(stringResource(Res.string.sniff)) })
+                    }
+                    preferenceGroup {
+                        TextFieldPreference(
+                            value = uiState.sniffTimeout,
+                            onValueChange = { viewModel.setSniffTimeout(it) },
+                            title = { Text(stringResource(Res.string.sniff_timeout)) },
+                            textToValue = { it },
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.timelapse,
+                                    color = IconMaskColors.IconLightBlue,
+                                )
+                            },
+                            summary = { Text(contentOrUnset(uiState.sniffTimeout)) },
+                            textField = { value, onValueChange, onOk ->
+                                DurationTextField(value, onValueChange, onOk)
+                            },
+                        )
+                        MultiSelectListPreference(
+                            value = uiState.sniffers,
+                            onValueChange = { viewModel.setSniffers(it) },
+                            values = sniffers,
+                            title = { Text("Sniffers") },
+                            icon = {
+                                MaskedIcon(
+                                    Res.drawable.layers,
+                                    color = IconMaskColors.IconLavender,
+                                )
+                            },
+                            summary = {
+                                val text = if (uiState.sniffers.isEmpty()) {
+                                    stringResource(Res.string.not_set)
+                                } else {
+                                    uiState.sniffers.joinToString("\n")
+                                }
+                                Text(text)
+                            },
+                            valueToText = { AnnotatedString(it) },
+                        )
+                    }
+                }
+            }
+        }
+
+        BoxedVerticalScrollbar(
+            modifier = Modifier
+                .padding(contentPadding)
+                .fillMaxHeight(),
+            adapter = rememberScrollbarAdapter(scrollState = listState),
+            style = defaultMaterialScrollbarStyle().copy(
+                thickness = 12.dp,
+            ),
+        )
+    }
+}
+
+private val networkTypes = listOf(
+    SingBoxOptions.NETWORK_TYPE_WIFI,
+    SingBoxOptions.NETWORK_TYPE_CELLULAR,
+    SingBoxOptions.NETWORK_TYPE_ETHERNET,
+    SingBoxOptions.NETWORK_TYPE_OTHER,
+)
+
+private val sniffers = listOf(
+    SingBoxOptions.SNIFF_HTTP,
+    SingBoxOptions.SNIFF_TLS,
+    SingBoxOptions.SNIFF_QUIC,
+    SingBoxOptions.SNIFF_STUN,
+    SingBoxOptions.SNIFF_DNS,
+    SingBoxOptions.SNIFF_BITTORRENT,
+    SingBoxOptions.SNIFF_DTLS,
+    SingBoxOptions.SNIFF_SSH,
+    SingBoxOptions.SNIFF_RDP,
+    SingBoxOptions.SNIFF_NTP,
+)
+
+internal data class SelectedLine(
+    val start: Int,
+    val end: Int,
+    val cursor: Int,
+    val raw: String,
+) {
+    val text = raw.removeSuffix("\r")
+    val suffix = if (raw.endsWith('\r')) "\r" else ""
+}
+
+internal fun TextFieldValue.selectedLine(): SelectedLine? {
+    if (!selection.collapsed) return null
+
+    val cursor = selection.end.fastCoerceIn(0, annotatedString.length)
+    val text = annotatedString.text
+    val end = text.indexOf('\n', cursor).let {
+        if (it >= 0) {
+            it
+        } else {
+            text.length
+        }
+    }
+    val start = if (cursor == 0) {
+        0
+    } else {
+        text.lastIndexOf('\n', cursor - 1).let {
+            if (it >= 0) {
+                it + 1
+            } else {
+                0
+            }
+        }
+    }
+    return SelectedLine(
+        start = start,
+        end = end,
+        cursor = cursor,
+        raw = text.substring(start, end),
+    )
+}
+
+@Composable
+private fun RuleSetAutoCompleteTextField(
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    onOk: () -> Unit,
+    geoDir: File?,
+    onCopy: suspend () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    var ruleSets by remember { mutableStateOf(emptyList<String>()) }
+    LaunchedEffect(geoDir) {
+        ruleSets = withContext(Dispatchers.IO) {
+            geoDir?.listFiles()
+                ?.filter { it.isFile && it.extension == "srs" }
+                ?.map { it.nameWithoutExtension }
+                ?.sorted()
+                .orEmpty()
+        }
+    }
+
+    val suggestions = remember(value, ruleSets) {
+        val prefix = value.selectedLine()?.ruleSetSuggestionPrefix() ?: return@remember emptyList()
+        ruleSets.findRuleSetSuggestions(prefix, RULE_SET_SUGGESTION_LIMIT)
+    }
+
+    Column(modifier = modifier) {
+        AutoCompleteTextField(
+            value = value,
+            onValueChange = onValueChange,
+            onOk = onOk,
+            suggestions = suggestions,
+            onChooseSuggestion = { suggestion ->
+                val line = value.selectedLine() ?: return@AutoCompleteTextField
+                val linePrefix = line.raw.substringBefore(':', missingDelimiterValue = "")
+                if (linePrefix.isBlank()) return@AutoCompleteTextField
+                val replacement = "$linePrefix:$suggestion${line.suffix}"
+                onValueChange(
+                    value.copy(
+                        annotatedString = AnnotatedString(
+                            value.annotatedString.text.replaceRange(line.start, line.end, replacement),
+                        ),
+                        selection = TextRange(line.start + replacement.length),
+                        composition = null,
+                    ),
+                )
+            },
+            displaySuggestion = { it },
+        )
+    }
+}
+
+// Implement a mini parser to improve performance.
+internal fun SelectedLine.ruleSetSuggestionPrefix(): String? {
+    if (cursor != end) return null
+
+    val delimiterIndex = text.indexOf(':')
+    if (delimiterIndex <= 0) return null
+
+    val rawType = text.substring(0, delimiterIndex)
+    val type = when {
+        rawType.endsWith(RuleItem.TYPE_FLAG_PLUS_DNS) -> {
+            rawType.removeSuffix(RuleItem.TYPE_FLAG_PLUS_DNS)
+        }
+
+        rawType.endsWith(RuleItem.TYPE_FLAG_MINUS_DNS) -> {
+            rawType.removeSuffix(RuleItem.TYPE_FLAG_MINUS_DNS)
+        }
+
+        else -> rawType
+    }
+    if (type != RuleItem.TYPE_FLAG_RULE_SET) return null
+
+    return text.substring(delimiterIndex + 1)
+}
+
+internal fun List<String>.findRuleSetSuggestions(prefix: String, limit: Int): List<String> {
+    if (isEmpty() || limit <= 0) return emptyList()
+
+    val startIndex = lowerBound(prefix)
+    if (startIndex == size || !this[startIndex].startsWith(prefix)) return emptyList()
+
+    val suggestions = ArrayList<String>(limit.coerceAtMost(size - startIndex))
+    for (index in startIndex until size) {
+        val candidate = this[index]
+        if (!candidate.startsWith(prefix)) break
+
+        suggestions += candidate
+        if (suggestions.size >= limit) break
+    }
+    return suggestions
+}
+
+private fun List<String>.lowerBound(prefix: String): Int {
+    var low = 0
+    var high = size
+    while (low < high) {
+        val mid = (low + high).ushr(1)
+        if (this[mid] < prefix) {
+            low = mid + 1
+        } else {
+            high = mid
+        }
+    }
+    return low
+}

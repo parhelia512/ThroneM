@@ -58,8 +58,6 @@
     <string name="security">تشفير طبقة النقل</string>
     <string name="alter_id">تغيير رقم التعريف</string>
     <string name="uuid">معرف المستخدم</string>
-    <string name="obfs_param">Obfs بارام</string>
-    <string name="obfs">Obfs(أو بی اِف اِس)</string>
     <string name="protocol_param">بروتوكول بارام</string>
     <string name="protocol">البروتوكول</string>
     <string name="enc_method">طريقة التشفير</string>
@@ -170,7 +168,7 @@
     <string name="settings">إعدادات</string>
     <string name="clipboard_empty">الحافظة فارغة</string>
     <string name="connect">الاتصال</string>
-    <string name="profile_empty">الرجاء تحديد ملف تعريف</string>
+    <string name="profile_empty">الرجاء تحديد مجموعة وكيل</string>
     <string name="reboot_required">فشل بدء تشغيل خدمة VPN. قد تحتاج إلى إعادة تشغيل جهازك.</string>
     <string name="vpn_permission_denied">تم رفض الإذن لإنشاء خدمة VPN</string>
     <string name="vpn_error">%1$s</string>
@@ -229,8 +227,6 @@
     <string name="install_from_play_store">التثبيت من متجر Play</string>
     <string name="action_download">تحميل</string>
     <string name="action_learn_more">يتعلم أكثر</string>
-    <string name="profile_requiring_plugin">يتطلب ملف التعريف %1$s تثبيت المكون الإضافي %2$s، لكن لم يتم العثور عليه.</string>
-    <string name="missing_plugin">في عداد المفقودين المكونات في</string>
     <string name="confirm">أكد</string>
     <string name="user_agent">وكيل المستخدم</string>
     <string name="update_when_connected_only_sum">منع تسرب عنوان IP</string>
@@ -285,9 +281,6 @@
     <string name="unsaved_changes_prompt">لم يتم حفظ التغييرات. هل تريد حفظ؟</string>
     <string name="ss_cat">إعدادات Shadowsocks</string>
     <string name="proxy_cat">اعدادات الخادم</string>
-    <string name="plugin_auto_connect_unlock_only">قد لا يعمل هذا المكون الإضافي مع الاتصال التلقائي</string>
-    <string name="plugin_untrusted">تحذير: يبدو أن هذا المكون الإضافي لا يأتي من مصدر موثوق ومعروف.</string>
-    <string name="plugin_unknown">مكون إضافي غير معروف %1$s</string>
     <string name="plugin_disabled">غير مفعّل</string>
     <string name="plugin_configure">تهيئة…</string>
     <string name="plugin">الإضافات</string>
@@ -343,8 +336,6 @@
         <item quantity="one">%1$d اتصالات TCP</item>
         <item quantity="other">%1$d اتصالات TCP</item>
     </plurals>
-    <string name="shadowsocks_plugin_v2ray">V2Ray (مكون أندرويد الإضافي Shadowsocks)</string>
-    <string name="shadowsocks_plugin_simple_obfs">Simple Obfs (مكون أندرويد الإضافي Shadowsocks)</string>
     <string name="group_order_by_delay">عن طريق التأخير</string>
     <string name="group_order_by_name">بالاسم</string>
     <string name="group_order_origin">أصل</string>

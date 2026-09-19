@@ -1,0 +1,79 @@
+package io.throneproj.thronem.fmt.juicity
+
+import kotlinx.serialization.Serializable as KxsSerializable
+import io.throneproj.thronem.fmt.AbstractBean
+import io.throneproj.thronem.fmt.BeanConverters
+import io.throneproj.thronem.fmt.ValidateResult
+import io.throneproj.thronem.fmt.tuic.TuicBean
+import io.throneproj.thronem.io.BinaryInput
+import io.throneproj.thronem.io.BinaryOutput
+import io.throneproj.thronem.resources.Res
+import io.throneproj.thronem.resources.warn_insecure
+
+@KxsSerializable
+class JuicityBean : AbstractBean() {
+
+    companion object {
+        @JvmField
+        val CREATOR = object : CREATOR<JuicityBean>() {
+            override fun newInstance(): JuicityBean {
+                return JuicityBean()
+            }
+
+            override fun newArray(size: Int): Array<JuicityBean?> {
+                return arrayOfNulls(size)
+            }
+        }
+    }
+
+    var uuid: String = ""
+    var password: String = ""
+    var sni: String = ""
+    var allowInsecure: Boolean = false
+
+    // Only BBR???
+    // https://github.com/daeuniverse/softwind/blob/6daa40f6b7a5cb9a0c44ea252e86fcb3440a7a0e/protocol/tuic/common/congestion.go#L15
+    // public String congestionControl;
+    var pinSHA256: String = ""
+
+    override fun isInsecure(): ValidateResult {
+        val result = super.isInsecure()
+        if (shouldReturnFromInsecureCheck(result)) return result
+
+        if (allowInsecure) return ValidateResult.Insecure(Res.string.warn_insecure)
+        return ValidateResult.Secure.Continue
+    }
+
+    override fun serialize(output: BinaryOutput) {
+        output.writeInt(0)
+        super.serialize(output)
+        output.writeString(uuid)
+        output.writeString(password)
+        output.writeString(sni)
+        output.writeBoolean(allowInsecure)
+        output.writeString(pinSHA256)
+    }
+
+    override fun deserialize(input: BinaryInput) {
+        input.readInt()
+        super.deserialize(input)
+        uuid = input.readString()
+        password = input.readString()
+        sni = input.readString()
+        allowInsecure = input.readBoolean()
+        pinSHA256 = input.readString()
+    }
+
+    override fun applyFeatureSettings(other: AbstractBean) {
+        if (other !is JuicityBean) return
+        other.allowInsecure = allowInsecure
+    }
+
+    override val defaultPort get() = 443
+    override val canTCPing get() = false
+
+    override fun clone(): AbstractBean {
+        return BeanConverters.deserialize(TuicBean(), BeanConverters.serialize(this))
+    }
+
+}

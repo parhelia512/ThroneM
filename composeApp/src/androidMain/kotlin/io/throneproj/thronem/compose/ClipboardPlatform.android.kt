@@ -1,0 +1,68 @@
+package io.throneproj.thronem.compose
+
+import android.content.ClipData
+import android.graphics.BitmapFactory
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.Clipboard
+import androidx.compose.ui.platform.toClipEntry
+import androidx.core.content.FileProvider
+import io.throneproj.thronem.ktx.Logs
+import io.throneproj.thronem.repository.resolveAndroidRepository
+import io.throneproj.thronem.repository.resolveRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.util.UUID
+
+private const val CLIPBOARD_IMAGE_CACHE_DIRECTORY = "clipboard"
+
+actual suspend fun Clipboard.setPlainText(text: String) {
+    val clipData = ClipData.newPlainText(null, text)
+    setClipEntry(clipData.toClipEntry())
+}
+
+actual suspend fun Clipboard.getPlainText(): String? {
+    return getClipEntry()?.clipData?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.text?.toString()
+}
+
+actual suspend fun Clipboard.getFirstContent(): ClipboardContent? {
+    val item = getClipEntry()?.clipData?.takeIf { it.itemCount > 0 }?.getItemAt(0) ?: return null
+    item.text?.toString()?.let { return ClipboardContent.Text(it) }
+
+    val context = resolveAndroidRepository().context
+    val uri = item.uri ?: return null
+    return withContext(Dispatchers.IO) {
+        try {
+            if (context.contentResolver.getType(uri)?.startsWith("image/") == true) {
+                context.contentResolver.openInputStream(uri)
+                    .use { BitmapFactory.decodeStream(it) }
+                    ?.let { ClipboardContent.Image(it.asImageBitmap()) }
+            } else {
+                item.coerceToText(context)?.toString()?.let(ClipboardContent::Text)
+            }
+        } catch (e: Exception) {
+            Logs.e(e)
+            null
+        }
+    }
+}
+
+actual suspend fun Clipboard.setImage(bitmap: ImageBitmap) {
+    val context = resolveAndroidRepository().context
+    val imageFile = withContext(Dispatchers.IO) {
+        File(
+            resolveRepository().cacheDir.resolve(CLIPBOARD_IMAGE_CACHE_DIRECTORY),
+            "${UUID.randomUUID()}.png",
+        ).also {
+            it.parentFile?.mkdirs()
+            it.writeBytes(encodeImageBitmapToPng(bitmap))
+        }
+    }
+    val uri = FileProvider.getUriForFile(context, "${context.packageName}.cache", imageFile)
+    setClipEntry(ClipData.newUri(context.contentResolver, null, uri).toClipEntry())
+}
+
+internal fun clearClipboardImageCache(cacheDir: File) {
+    cacheDir.resolve(CLIPBOARD_IMAGE_CACHE_DIRECTORY).deleteRecursively()
+}

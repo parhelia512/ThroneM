@@ -15,27 +15,8 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-include(":plugin:api")
-
-val buildPlugin = providers.environmentVariable("BUILD_PLUGIN").orNull
-when {
-    buildPlugin.isNullOrBlank() -> {
-        include(":plugin:hysteria2")
-        include(":plugin:juicity")
-        include(":plugin:naive")
-        include(":plugin:mieru")
-        include(":plugin:shadowquic")
-    }
-    buildPlugin == "none" -> {
-    }
-    else -> {
-        include(":plugin:$buildPlugin")
-    }
-}
-
 include(":androidApp")
 include(":composeApp")
-include(":proto")
 include(":library:DragDropSwipeLazyColumn")
 
-rootProject.name = "husi"
+rootProject.name = "thronem"

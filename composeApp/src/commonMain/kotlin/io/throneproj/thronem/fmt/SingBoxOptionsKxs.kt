@@ -1,0 +1,110 @@
+package io.throneproj.thronem.fmt
+
+import io.throneproj.thronem.fmt.SingBoxOptions.DomainResolveOptions
+import io.throneproj.thronem.fmt.SingBoxOptions.ExperimentalOptions
+import io.throneproj.thronem.fmt.SingBoxOptions.HTTPClient
+import io.throneproj.thronem.fmt.SingBoxOptions.LogOptions
+import io.throneproj.thronem.fmt.SingBoxOptions.MyDNSOptions
+import io.throneproj.thronem.fmt.SingBoxOptions.MyOptions
+import io.throneproj.thronem.fmt.SingBoxOptions.MyRouteOptions
+import io.throneproj.thronem.fmt.SingBoxOptions.NTPOptions
+import io.throneproj.thronem.fmt.SingBoxOptions.OptimisticDNSOptions
+import io.throneproj.thronem.ktx.toJsonObjectKxs
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable as KxsSerializable
+import kotlinx.serialization.json.JsonObject
+
+@KxsSerializable
+data class MyDNSOptionsKxs(
+    val servers: List<JsonObject>? = null,
+    val rules: List<JsonObject>? = null,
+    @SerialName("final")
+    val final_: String? = null,
+    val reverse_mapping: Boolean? = null,
+    val strategy: String? = null,
+    val disable_cache: Boolean? = null,
+    val disable_expire: Boolean? = null,
+    val independent_cache: Boolean? = null,
+    val cache_capacity: Int? = null,
+    val optimistic: OptimisticDNSOptions? = null,
+    val client_subnet: String? = null,
+)
+
+@KxsSerializable
+data class MyRouteOptionsKxs(
+    val rules: List<JsonObject>? = null,
+    val rule_set: List<JsonObject>? = null,
+    @SerialName("final")
+    val final_: String? = null,
+    val find_process: Boolean? = null,
+    val auto_detect_interface: Boolean? = null,
+    val override_android_vpn: Boolean? = null,
+    val default_interface: String? = null,
+    val default_mark: Int? = null,
+    val default_domain_resolver: DomainResolveOptions? = null,
+    val default_network_strategy: String? = null,
+    val default_network_type: List<String>? = null,
+    val default_fallback_network_type: List<String>? = null,
+    val default_fallback_delay: String? = null,
+    val default_http_client: String? = null,
+)
+
+@KxsSerializable
+data class MyOptionsKxs(
+    val `$schema`: String? = null,
+    val log: LogOptions? = null,
+    val dns: MyDNSOptionsKxs? = null,
+    val ntp: NTPOptions? = null,
+    val http_clients: List<HTTPClient>? = null,
+    val inbounds: List<JsonObject>? = null,
+    val outbounds: List<JsonObject>? = null,
+    val endpoints: List<JsonObject>? = null,
+    val route: MyRouteOptionsKxs? = null,
+    val services: List<JsonObject>? = null,
+    val experimental: ExperimentalOptions? = null,
+)
+
+fun MyDNSOptions.toKxs(): MyDNSOptionsKxs = MyDNSOptionsKxs(
+    servers = servers?.map { it.toJsonObjectKxs() },
+    rules = rules?.map { it.toJsonObjectKxs() },
+    final_ = final_,
+    reverse_mapping = reverse_mapping,
+    strategy = strategy,
+    disable_cache = disable_cache,
+    disable_expire = disable_expire,
+    independent_cache = independent_cache,
+    cache_capacity = cache_capacity,
+    optimistic = optimistic,
+    client_subnet = client_subnet,
+)
+
+fun MyRouteOptions.toKxs(): MyRouteOptionsKxs = MyRouteOptionsKxs(
+    rules = rules?.map { it.toJsonObjectKxs() },
+    rule_set = rule_set?.map { it.toJsonObjectKxs() },
+    final_ = final_,
+    find_process = find_process,
+    auto_detect_interface = auto_detect_interface,
+    override_android_vpn = override_android_vpn,
+    default_interface = default_interface,
+    default_mark = default_mark,
+    default_domain_resolver = default_domain_resolver,
+    default_network_strategy = default_network_strategy,
+    default_network_type = default_network_type,
+    default_fallback_network_type = default_fallback_network_type,
+    default_fallback_delay = default_fallback_delay,
+    default_http_client = default_http_client,
+)
+
+fun MyOptions.toKxs(): MyOptionsKxs = MyOptionsKxs(
+    `$schema` = `$schema`,
+    log = log,
+    dns = dns?.toKxs(),
+    ntp = ntp,
+    http_clients = http_clients,
+    inbounds = inbounds?.map { it.toJsonObjectKxs() },
+    outbounds = outbounds?.map { it.toJsonObjectKxs() },
+    endpoints = endpoints?.map { it.toJsonObjectKxs() },
+    route = route?.toKxs(),
+    services = services?.map { it.toJsonObjectKxs() },
+    experimental = experimental,
+)

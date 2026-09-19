@@ -99,8 +99,6 @@
     <string name="enc_method">Método de cifrado</string>
     <string name="protocol">Protocolo</string>
     <string name="protocol_param">Parámetro de protocolo</string>
-    <string name="obfs">Obfs</string>
-    <string name="obfs_param">Parámetro de obfs</string>
     <string name="uuid">ID de usuario</string>
     <string name="alter_id">ID alternativo</string>
     <string name="security">Cifrado de la capa de transporte</string>
@@ -174,7 +172,7 @@
     <string name="vpn_permission_denied">Permiso denegado para crear un servicio VPN</string>
     <string name="reboot_required">No se ha podido iniciar el servicio VPN. Es posible que debas reiniciar tu dispositivo.</string>
     <!-- alert category -->
-    <string name="profile_empty">Selecciona un perfil</string>
+    <string name="profile_empty">Selecciona un conjunto de proxy</string>
     <string name="connect">Conectar</string>
     <string name="clipboard_empty">El portapapeles está vacío</string>
     <!-- menu category -->
@@ -248,9 +246,6 @@
     <string name="plugin">Plugin</string>
     <string name="plugin_configure">Configurar…</string>
     <string name="plugin_disabled">Desactivado</string>
-    <string name="plugin_unknown">Plugin desconocido %1$s</string>
-    <string name="plugin_untrusted">Advertencia: este plugin no parece provenir de una fuente confiable conocida.</string>
-    <string name="plugin_auto_connect_unlock_only">Es posible que este plugin no funcione con conexión automática</string>
     <string name="proxy_cat">Ajustes del servidor</string>
     <string name="ss_cat">Ajustes de Shadowsocks</string>
     <string name="unsaved_changes_prompt">Cambios no guardados. ¿Quieres guardar?</string>
@@ -310,8 +305,6 @@
     <string name="update_when_connected_only_sum">Evita la fuga de direcciones IP</string>
     <string name="user_agent">Agente de usuario</string>
     <string name="confirm">Confirmar</string>
-    <string name="missing_plugin">Plugin faltante</string>
-    <string name="profile_requiring_plugin">El perfil %1$s requiere que el plugin %2$s esté instalado, pero no se ha encontrado.</string>
     <string name="action_learn_more">APRENDER MÁS</string>
     <string name="action_download">DESCARGAR</string>
     <string name="install_from_play_store">Instalar desde Play Store</string>
@@ -351,8 +344,6 @@
     <string name="group_order_origin">Origen</string>
     <string name="group_order_by_name">Por nombre</string>
     <string name="group_order_by_delay">Por demora</string>
-    <string name="shadowsocks_plugin_simple_obfs">Simple Obfs (Plugin de Shadowsocks para Android)</string>
-    <string name="shadowsocks_plugin_v2ray">V2Ray (Plugin de Shadowsocks para Android)</string>
     <string name="traffic_uplink" translatable="false">%1$s | %2$s/s ↑</string>
     <string name="traffic_downlink" translatable="false">%1$s | %2$s/s ↓</string>
     <string name="traffic_uplink_total" translatable="false">%1$s ↑</string>
@@ -421,7 +412,6 @@
     <string name="acquire_wake_lock_summary">Mantiene la CPU encendida</string>
     <string name="action_switch">Cambiar</string>
     <string name="connection_test_delete_unavailable">Borrar los no disponibles</string>
-    <string name="neko_plugin_internal_error">%1$s error interno</string>
     <string name="update_all_subscription">Actualizar suscripciones</string>
     <string name="route_opt_block_quic">Bloquear QUIC</string>
     <string name="subscription_expire">Expira: %1$s</string>
@@ -434,7 +424,7 @@
     <string name="tuic_udp_relay_mode">Modo de retransmisión UDP</string>
     <string name="tuic_congestion_controller">Controlador de congestión</string>
     <string name="hop_interval">Intervalo de salto de puerto (segundos)</string>
-    <string name="app_name">husi</string>
+    <string name="app_name">thronem</string>
     <string name="menu_dashboard">Panel</string>
     <string name="is_outbound_only">El conjunto JSON es saliente</string>
     <string name="save">Guardar</string>
@@ -477,11 +467,10 @@
     <string name="action_flash_on">Encender el flash</string>
     <string name="location_permission_title">Permiso de ubicación</string>
     <string name="no_thanks">No, gracias</string>
-    <string name="location_permission_description">Tu regla de ruta contiene reglas de enrutamiento Wi-Fi SSID o Wi-Fi BSSID. Para que funcionen, husi utiliza el permiso de ubicación en segundo plano para obtener información sobre la red Wi-Fi conectada. La información se utilizará únicamente con fines de enrutamiento.</string>
+    <string name="location_permission_description">Tu regla de ruta contiene reglas de enrutamiento Wi-Fi SSID o Wi-Fi BSSID. Para que funcionen, thronem utiliza el permiso de ubicación en segundo plano para obtener información sobre la red Wi-Fi conectada. La información se utilizará únicamente con fines de enrutamiento.</string>
     <string name="location_permission_background_description">A partir de Android 10, se requiere permiso de ubicación en segundo plano. Seleccione Permitir siempre para otorgar el permiso.</string>
     <string name="connection_test_mux">Servidor no compatible con este protocolo múltiplex</string>
     <string name="insecure_warn">Aviso de seguridad</string>
-    <string name="hysteria2_provider">Proveedor de Hysteria2</string>
     <string name="authenticated_length">Longitud autenticada</string>
     <string name="experimental_authenticated_length">Hace que la longitud de cada segmento de payload no sea modificable. Este experimento requiere que el servidor y el cliente utilicen la misma versión de v2ray-core. Se esperan más actualizaciones importantes sobre este experimento.</string>
     <string name="mux_preference">Ajustes del Multiplex</string>
@@ -521,12 +510,9 @@
     <string name="custom_rule_provider">Proveedor de reglas personalizadas</string>
     <string name="client_type">Tipo de cliente</string>
     <string name="done">Hecho</string>
-    <string name="custom_plugin_prefix">Prefijo de plugin personalizado</string>
-    <string name="custom_plugin_prefix_summary">Por favor, asegúrate de que confías plenamente en el proveedor del plugin.</string>
     <string name="traffic_status">Estadísticas</string>
     <string name="traffic_connections">Conexiones</string>
     <string name="status_status">Estados</string>
-    <string name="disable_post_quantum">Deshabilitar el acuerdo de clave postcuántica</string>
     <string name="status_memory">Memoria</string>
     <string name="mux_strategy">Estrategia Mux</string>
     <string name="mux_max_connections">Conexiones máximas</string>

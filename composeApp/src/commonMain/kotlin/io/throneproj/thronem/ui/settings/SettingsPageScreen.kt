@@ -1,0 +1,196 @@
+package io.throneproj.thronem.ui.settings
+
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarResult
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.dp
+import io.throneproj.thronem.compose.BoxedVerticalScrollbar
+import io.throneproj.thronem.compose.SimpleIconButton
+import io.throneproj.thronem.compose.SimpleTopAppBar
+import io.throneproj.thronem.compose.fadingEdge
+import io.throneproj.thronem.compose.material3.Text
+import io.throneproj.thronem.compose.preferenceGroup
+import io.throneproj.thronem.compose.withNavigation
+import io.throneproj.thronem.database.DataStore
+import io.throneproj.thronem.database.ThroneDatabase
+import io.throneproj.thronem.ktx.restartApplication
+import io.throneproj.thronem.ktx.runOnDefaultDispatcher
+import io.throneproj.thronem.repository.resolveRepository
+import io.throneproj.thronem.resources.Res
+import io.throneproj.thronem.resources.apply
+import io.throneproj.thronem.resources.arrow_back
+import io.throneproj.thronem.resources.back
+import io.throneproj.thronem.resources.cag_dns
+import io.throneproj.thronem.resources.cag_misc
+import io.throneproj.thronem.resources.general_settings
+import io.throneproj.thronem.resources.inbound_settings
+import io.throneproj.thronem.resources.need_reload
+import io.throneproj.thronem.resources.need_restart
+import io.throneproj.thronem.resources.ntp_category
+import io.throneproj.thronem.resources.protocol_settings
+import io.throneproj.thronem.resources.route_options
+import io.throneproj.thronem.resources.system_daemon
+import io.throneproj.thronem.ui.LocalSnackbarEmitter
+import io.throneproj.thronem.ui.NavRoutes
+import io.throneproj.thronem.ui.StringOrRes
+import io.throneproj.thronem.ui.PlatformDaemonSettingsGroup
+import io.github.oikvpqya.compose.fastscroller.material3.defaultMaterialScrollbarStyle
+import io.github.oikvpqya.compose.fastscroller.rememberScrollbarAdapter
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import me.zhanghai.compose.preference.ProvidePreferenceLocals
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
+import kotlin.time.Duration.Companion.milliseconds
+
+@Composable
+fun SettingsPageScreen(
+    kind: NavRoutes.SettingsPage.Kind,
+    onBackPress: () -> Unit,
+    openAppManager: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val windowInsets = WindowInsets.safeDrawing
+    val snackbar = LocalSnackbarEmitter.current
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(Unit) {
+        withContext(Dispatchers.IO) {
+            DataStore.initGlobal()
+        }
+    }
+
+    fun needReload() {
+        if (!DataStore.serviceState.started) return
+        snackbar.show(
+            StringOrRes.Res(Res.string.need_reload),
+            StringOrRes.Res(Res.string.apply),
+        ) { result ->
+            if (result == SnackbarResult.Dismissed) return@show
+            resolveRepository().reloadService()
+        }
+    }
+
+    fun needRestart() {
+        snackbar.show(
+            StringOrRes.Res(Res.string.need_restart),
+            StringOrRes.Res(Res.string.apply),
+        ) { result ->
+            if (result == SnackbarResult.Dismissed) return@show
+            resolveRepository().stopService()
+            runOnDefaultDispatcher {
+                delay(500.milliseconds)
+                ThroneDatabase.instance.close()
+                restartApplication()
+            }
+        }
+    }
+
+    val title = when (kind) {
+        NavRoutes.SettingsPage.Kind.General -> Res.string.general_settings
+        NavRoutes.SettingsPage.Kind.Daemon -> Res.string.system_daemon
+        NavRoutes.SettingsPage.Kind.Route -> Res.string.route_options
+        NavRoutes.SettingsPage.Kind.Protocol -> Res.string.protocol_settings
+        NavRoutes.SettingsPage.Kind.Dns -> Res.string.cag_dns
+        NavRoutes.SettingsPage.Kind.Inbound -> Res.string.inbound_settings
+        NavRoutes.SettingsPage.Kind.Misc -> Res.string.cag_misc
+        NavRoutes.SettingsPage.Kind.Ntp -> Res.string.ntp_category
+    }
+
+    Scaffold(
+        modifier = modifier
+            .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            SimpleTopAppBar(
+                title = { Text(stringResource(title)) },
+                navigationIcon = {
+                    SimpleIconButton(
+                        imageVector = vectorResource(Res.drawable.arrow_back),
+                        contentDescription = stringResource(Res.string.back),
+                        onClick = onBackPress,
+                    )
+                },
+                windowInsets = windowInsets.only(WindowInsetsSides.Top + WindowInsetsSides.Horizontal),
+                scrollBehavior = scrollBehavior,
+            )
+        },
+    ) { innerPadding ->
+        ProvidePreferenceLocals {
+            val contentPadding = innerPadding.withNavigation()
+            Row(modifier = Modifier.fillMaxSize()) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .fadingEdge(listState),
+                    contentPadding = contentPadding,
+                ) {
+                    preferenceGroup {
+                        when (kind) {
+                            NavRoutes.SettingsPage.Kind.General -> GeneralSettingsGroup(
+                                needReload = { needReload() },
+                                needRestart = { needRestart() },
+                                showMessage = { message ->
+                                    snackbar.show(StringOrRes.Direct(message))
+                                },
+                            )
+                            NavRoutes.SettingsPage.Kind.Daemon -> PlatformDaemonSettingsGroup(
+                                showMessage = { message ->
+                                    snackbar.show(StringOrRes.Direct(message))
+                                },
+                            )
+                            NavRoutes.SettingsPage.Kind.Route -> RouteSettingsGroup(
+                                needReload = { needReload() },
+                                openAppManager = openAppManager,
+                            )
+                            NavRoutes.SettingsPage.Kind.Protocol -> ProtocolSettingsGroup(
+                                needReload = { needReload() },
+                            )
+                            NavRoutes.SettingsPage.Kind.Dns -> DnsSettingsGroup(
+                                needReload = { needReload() },
+                            )
+                            NavRoutes.SettingsPage.Kind.Inbound -> InboundSettingsGroup(
+                                needReload = { needReload() },
+                            )
+                            NavRoutes.SettingsPage.Kind.Misc -> MiscSettingsGroup(
+                                needReload = { needReload() },
+                                needRestart = { needRestart() },
+                            )
+                            NavRoutes.SettingsPage.Kind.Ntp -> NtpSettingsGroup(
+                                needReload = { needReload() },
+                            )
+                        }
+                    }
+                }
+
+                BoxedVerticalScrollbar(
+                    modifier = Modifier
+                        .padding(contentPadding)
+                        .fillMaxHeight(),
+                    adapter = rememberScrollbarAdapter(scrollState = listState),
+                    style = defaultMaterialScrollbarStyle().copy(
+                        thickness = 12.dp,
+                    ),
+                )
+            }
+        }
+    }
+}

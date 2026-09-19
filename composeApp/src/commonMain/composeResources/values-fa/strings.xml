@@ -97,8 +97,6 @@
     <string name="enc_method">روش رمزگذاری</string>
     <string name="protocol">پروتکل</string>
     <string name="protocol_param">پارامتر پروتکل</string>
-    <string name="obfs">مبهم سازی</string>
-    <string name="obfs_param">Obfs پارامتر</string>
     <string name="uuid">شناسه کاربر</string>
     <string name="alter_id">تغییر ایدی</string>
     <string name="security">رمزگذاری لایه انتقال</string>
@@ -173,7 +171,7 @@
     <string name="vpn_permission_denied">اجازه ایجاد سرویس VPN رد شد</string>
     <string name="reboot_required">سرویس VPN راه اندازی نشد. ممکن است لازم باشد دستگاه خود را مجددا راه اندازی کنید.</string>
     <!-- alert category -->
-    <string name="profile_empty">لطفا یک پروفایل انتخاب کنید</string>
+    <string name="profile_empty">لطفا یک مجموعه پروکسی انتخاب کنید</string>
     <string name="connect">اتصال</string>
     <string name="clipboard_empty">کلیپ بورد خالی است</string>
     <!-- menu category -->
@@ -245,9 +243,6 @@
     <string name="plugin">پلاگین</string>
     <string name="plugin_configure">پیکربندی…</string>
     <string name="plugin_disabled">غیرفعال شده</string>
-    <string name="plugin_unknown">%1$s افزونه ناشناخته است</string>
-    <string name="plugin_untrusted">هشدار: به نظر نمی رسد این افزونه از یک منبع معتبر شناخته شده باشد.</string>
-    <string name="plugin_auto_connect_unlock_only">این افزونه ممکن است با اتصال خودکار کار نکند</string>
     <string name="proxy_cat">تنظیمات سرور</string>
     <string name="ss_cat">تنظیمات شدوساکس</string>
     <string name="unsaved_changes_prompt">تغییرات ذخیره نشد. آیا می خواهید ذخیره کنید؟</string>
@@ -302,8 +297,6 @@
     <string name="update_when_connected_only_sum">جلوگیری از نشت آدرس IP</string>
     <string name="user_agent">عامل کاربر</string>
     <string name="confirm">تایید</string>
-    <string name="missing_plugin">افزونه از دست رفته</string>
-    <string name="profile_requiring_plugin">پروفایل %1$s نیاز دارد %2$s افزونه نصب باشد، اما پیدا نشد.</string>
     <string name="action_learn_more">بیشتر بدانید</string>
     <string name="action_download">دانلود</string>
     <string name="install_from_play_store">نصب از پلی استور</string>
@@ -344,8 +337,6 @@
     <string name="group_order_origin">مبدا</string>
     <string name="group_order_by_name">براساس اسم</string>
     <string name="group_order_by_delay">براساس تاخیر</string>
-    <string name="shadowsocks_plugin_simple_obfs">Obfs ساده (افزونه اندروید شدوساکس)</string>
-    <string name="shadowsocks_plugin_v2ray">V2Ray (افزونه اندروید شدوساکس)</string>
     <plurals name="tcp_connections">
         <item quantity="one">%1$d اتصال TCP</item>
         <item quantity="other">%1$d اتصال TCP</item>
@@ -412,12 +403,11 @@
     <string name="tuic_disable_sni">غیرفعال کردن SNI</string>
     <string name="tuic_reduce_rtt">فعال‌سازی 0-RTT ارتباط QUIC</string>
     <string name="connection_test_delete_unavailable">پاک‌سازی غیرقابل دسترس‌ها</string>
-    <string name="neko_plugin_internal_error">%1$s خطای داخلی</string>
     <string name="move">انتقال</string>
     <string name="create_shortcut">ایجاد میانبر</string>
     <string name="hop_interval">فاصله پرش پورت(ثانیه)</string>
     <string name="utls_fingerprint">اثر انگشت uTLS</string>
-    <string name="app_name">husi</string>
+    <string name="app_name">thronem</string>
     <string name="menu_dashboard">داشبورد </string>
     <string name="mux_sum">مالتی‌پلکسر (Mux) برای کاهش تأخیر دست‌تکانی (هندشیک) اتصال طراحی شده است، نه برای افزایش توان عملیاتی اتصال. استفاده از مالتی‌پلکسر برای تماشای ویدیو، دانلود یا تست سرعت معمولاً نتیجه معکوس می‌دهد. اگر سرور از آن پشتیبانی نکند، قادر به دسترسی به اینترنت نخواهید بود.</string>
     <string name="mux_type">پروتکل Mux</string>
@@ -446,7 +436,7 @@
     <string name="scan_vpn_app_introduce">بررسی کردن نصب شدن VPN و نوع آن روی دستگاه.</string>
     <string name="vpn_core_path">مسیر شناسایی شده</string>
     <string name="location_permission_title">اجازه دادن موقعیت مکانی</string>
-    <string name="location_permission_description">قوانین route شما شامل قوانین مسیریابی Wi-Fi SSID و Wi-Fi BSSID می باشد. برای اینکه کار کنند، husi مجوز موقعیت یابی را در پس زمینه میخواهد تا اطلاعاتی درباره شبکه ی وای فای بدست آورد. این اطلاعات فقط برای اهداف مسیریابی استفاده خواهد شد.</string>
+    <string name="location_permission_description">قوانین route شما شامل قوانین مسیریابی Wi-Fi SSID و Wi-Fi BSSID می باشد. برای اینکه کار کنند، thronem مجوز موقعیت یابی را در پس زمینه میخواهد تا اطلاعاتی درباره شبکه ی وای فای بدست آورد. این اطلاعات فقط برای اهداف مسیریابی استفاده خواهد شد.</string>
     <string name="domain_strategy_for_direct">استراتژی دامنه برای اتصال مستقیم</string>
     <string name="domain_strategy_for_server">استراتژی دامنه برای آدرس سرور</string>
     <string name="is_outbound_only">مجموعه JSON خروجی است</string>
@@ -466,7 +456,6 @@
     <string name="mux_preference">تنظیمات مالتی پلکس</string>
     <string name="experimental_authenticated_length">طول هر بخش محموله بار دیگر قابل انعطاف نباشد. این آزمایش مستلزم استفاده سرور و کلاینت از نسخه مشابه v2ray-core است. انتظار می‌رود به‌روزرسانی‌های سریع‌تری درباره این آزمایش انجام شود.</string>
     <string name="test_timeout">مهلت تست (میلی‌ثانیه)</string>
-    <string name="hysteria2_provider">ارائه دهنده Hysteria2</string>
     <string name="keep_default">پیش فرض را حفظ کنید</string>
     <string name="connection_test_mux">سرور از این پروتکل چندگانه پشتیبانی نمی کند</string>
     <string name="ntp_category">تنظیمات سرویس گیرنده NTP</string>
@@ -515,13 +504,10 @@
     <string name="have_reset_network">تمام شبکه‌ها بازنشانی شده‌اند</string>
     <string name="client_type">نوع کاربر</string>
     <string name="done">تکمیل</string>
-    <string name="custom_plugin_prefix">پیشوند افزونه سفارشی</string>
-    <string name="custom_plugin_prefix_summary">لطفاً اطمینان کامل از ارائه‌دهنده افزونه داشته باشید.</string>
     <string name="traffic_status">آمار</string>
     <string name="status_memory">حافظه</string>
     <string name="traffic_connections">اتصالات</string>
     <string name="status_status">وضعیت</string>
-    <string name="disable_post_quantum">غیرفعال کردن توافق کلید پسا-کوانتومی</string>
     <string name="mux_strategy">استراتژی مالتی‌پلکسینگ</string>
     <string name="override_address">بازنویسی آدرس</string>
     <string name="mux_max_streams">حداکثر جریان‌های داده</string>

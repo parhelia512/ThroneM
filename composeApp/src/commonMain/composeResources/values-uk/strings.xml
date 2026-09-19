@@ -119,8 +119,6 @@
     <string name="server_address">Сервер</string>
     <string name="profile_name">Ім'я профілю</string>
     <string name="connection_test_url">URL-адреса перевірки з'єднання</string>
-    <string name="obfs_param">Параметри Obfs</string>
-    <string name="obfs">Obfs</string>
     <string name="speed">%1$s/s</string>
     <string name="menu_traffic">Трафік</string>
     <string name="route_opt_block_quic">Блокувати QUIC</string>
@@ -137,7 +135,7 @@
     <string name="nat_stun_server_hint">STUN сервер</string>
     <string name="share_subscription">Поділитися підпискою</string>
     <string name="insecure_warn">Попередження про небезпечні проксі</string>
-    <string name="app_name">husi</string>
+    <string name="app_name">thronem</string>
     <string name="action_open">Відкрити</string>
     <string name="update_all_subscription">Оновити усі підписки</string>
     <string name="route_proxy">Проксі</string>
@@ -174,7 +172,6 @@
     <string name="error_title">Помилка</string>
     <string name="no_proxies_found_in_clipboard">У буфері обміну не знайдено проксі</string>
     <string name="plugin_disabled">Вимкнено</string>
-    <string name="plugin_auto_connect_unlock_only">Цей плагін може не працювати з автопідключенням</string>
     <string name="auto">Авто</string>
     <string name="random">Випадковий</string>
     <string name="unavailable">Недоступний</string>
@@ -187,7 +184,6 @@
     <string name="force_resolve_sum">Під час оновлення перетворювати всі доменні імена у IP-адреси. Хост та SNI будуть додані автоматично, якщо це можливо</string>
     <string name="deduplication_sum">Видалити дуплікати конфігурацій при оновленні</string>
     <string name="auto_update">Автоматичне оновлення</string>
-    <string name="profile_requiring_plugin">Профіль %1$s потребує встановлення підключаємого модуля %2$s, але його не знайдено.</string>
     <string name="action_learn_more">ДІЗНАТИСЯ БІЛЬШЕ</string>
     <string name="action_download">ЗАВАНТАЖИТИ</string>
     <string name="download">Завантажити</string>
@@ -220,7 +216,6 @@
     <string name="release_wake_lock">Вимкнути WakeLock</string>
     <string name="action_switch">Перемкнути</string>
     <string name="tuic_disable_sni">Вимкнути SNI</string>
-    <string name="neko_plugin_internal_error">%1$s внутрішня помилка</string>
     <string name="move">Перемістити</string>
     <string name="create_shortcut">Створити ярлик</string>
     <string name="hop_interval">Інтервал перемикання портів(другий)</string>
@@ -238,7 +233,6 @@
         <item quantity="other">%1$d елементів видалені</item>
     </plurals>
     <string name="mux_preference">Налаштування мультиплексування</string>
-    <string name="hysteria2_provider">Провайдер Hysteria2</string>
     <string name="authenticated_length">Автентифікована довжина</string>
     <string name="keep_default">Залишити за замовчуванням</string>
     <plurals name="added">
@@ -306,8 +300,6 @@
     <string name="ignore_battery_optimizations_sum">Зняти деякі обмеження</string>
     <string name="plugin">Плагін</string>
     <string name="plugin_configure">Налаштувати…</string>
-    <string name="plugin_unknown">Невідомий плагін %1$s</string>
-    <string name="plugin_untrusted">Попрередження: схоже, що даний плагін встановлено не з надійного джерела.</string>
     <string name="proxy_cat">Налаштування сервера</string>
     <string name="ss_cat">Налаштування Shadowsocks</string>
     <string name="unsaved_changes_prompt">Зміни не збережно. Зберегти?</string>
@@ -364,7 +356,6 @@
     <string name="quic_connection_receive_window">Вікно отримання з'єднання QUIC</string>
     <string name="group_order_origin">За походженням</string>
     <string name="group_order_by_name">За назвою</string>
-    <string name="shadowsocks_plugin_simple_obfs">Simple Obfs (плагін Shadowsocks для Android)</string>
     <plurals name="tcp_connections">
         <item quantity="one">%1$d TCP-з'єднання</item>
         <item quantity="few">%1$d TCP-з'єднання</item>
@@ -380,7 +371,6 @@
     <string name="open_settings">Відкрити налаштування</string>
     <string name="open_market">Показати у маркеті</string>
     <string name="open_app">Відкрити застосунок</string>
-    <string name="shadowsocks_plugin_v2ray">V2Ray (плагін Shadowsocks для Android)</string>
     <string name="create_rule">Створити правило</string>
     <string name="copy_success">Копіювання успішне!</string>
     <string name="profile_traffic_statistics">Статистика трафіку профілю</string>
@@ -434,7 +424,7 @@
     <string name="enable_brutal">Увімкнути контролер перевантаження TCP Brutal</string>
     <string name="action_flash_off">Вимкнути спалах</string>
     <string name="blurred_address">Зробити адресу сервера розмитою</string>
-    <string name="location_permission_description">Ваше правило маршрутизації містить правила маршрутизації Wi-Fi SSID або Wi-Fi BSSID. Для того, щоб вони працювали, husi використовує дозвіл на визначення місцерозташування у фоновому режимі, аби отримувати інформацію про підключену мережу Wi-Fi. Інформація буде використовуватися виключно для маршрутизації.</string>
+    <string name="location_permission_description">Ваше правило маршрутизації містить правила маршрутизації Wi-Fi SSID або Wi-Fi BSSID. Для того, щоб вони працювали, thronem використовує дозвіл на визначення місцерозташування у фоновому режимі, аби отримувати інформацію про підключену мережу Wi-Fi. Інформація буде використовуватися виключно для маршрутизації.</string>
     <string name="location_permission_title">Дозвіл геолокації</string>
     <string name="no_thanks">Ні, дякую</string>
     <string name="test_timeout">Таймаут (мс)</string>
@@ -449,7 +439,7 @@
     <string name="share_qr_nfc">QR-код</string>
     <string name="add_profile_methods_manual_settings">Ручні налаштування</string>
     <string name="add_profile_methods_scan_qr_code">Сканувати QR-код</string>
-    <string name="profile_empty">Будь ласка, оберіть профіль</string>
+    <string name="profile_empty">Будь ласка, оберіть набір проксі</string>
     <string name="connect">Підключитися</string>
     <string name="clipboard_empty">Буфер обміну порожній</string>
     <string name="install_from_play_store">Встановити з Play Store</string>
@@ -463,7 +453,6 @@
     <string name="stun_test">Виявлення поведінки NAT</string>
     <string name="group_type">Тип групи</string>
     <string name="stun_test_summary">Визначити поведінку співставлення адресів NAT та поведінку фільтрації NAT відповідно до RFC 5780 за допомогою STUN.</string>
-    <string name="missing_plugin">Відсутній плагін</string>
     <string name="update_settings">Оновити налаштування</string>
     <string name="update_when_connected_only">Оновлювати тільки при підключенні</string>
     <string name="update_when_connected_only_sum">Запобігти витоку IP-адреси</string>
@@ -508,15 +497,12 @@
     <string name="custom_rule_provider">Користувацький постачальник ресурсів правил</string>
     <string name="padding">Відступ</string>
     <string name="done">Готово</string>
-    <string name="custom_plugin_prefix">Користувацький префікс плагіна</string>
-    <string name="custom_plugin_prefix_summary">Будь ласка, переконайтеся, що ви повністю довіряєте постачальнику плагіна.</string>
     <string name="traffic_status">Статистика</string>
     <string name="traffic_connections">З'єднання</string>
     <string name="status_memory">Пам'ять</string>
     <string name="status_status">Статус</string>
     <string name="mux_min_streams">Мінімальна кількість потоків</string>
     <string name="mux_max_streams">Максимальна кількість потоків</string>
-    <string name="disable_post_quantum">Вимкнути постквантове узгодження ключів</string>
     <string name="mux_number">Номер Mux</string>
     <string name="mux_strategy">Статегія Mux</string>
     <string name="mux_max_connections">Максимум з'єднань</string>

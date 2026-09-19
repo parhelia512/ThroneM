@@ -15,6 +15,6 @@ SHORTCUTS_FILE="composeApp/src/androidMain/res/xml/shortcuts.xml"
 sed -i "s/android:targetPackage=\"[^\"]*\"/android:targetPackage=\"$TARGET_PACKAGE\"/" "$SHORTCUTS_FILE"
 echo "Updated $SHORTCUTS_FILE android:targetPackage to $TARGET_PACKAGE"
 
-PROPERTIES_FILE="husi.properties"
+PROPERTIES_FILE="thronem.properties"
 sed -i "s#^PACKAGE_NAME=.*#PACKAGE_NAME=$TARGET_PACKAGE#" "$PROPERTIES_FILE"
 echo "Updated $PROPERTIES_FILE PACKAGE_NAME to $TARGET_PACKAGE"

@@ -136,8 +136,6 @@
     <string name="install_from_play_store">Установить из Play Store</string>
     <string name="action_download">СКАЧАТЬ</string>
     <string name="action_learn_more">УЗНАТЬ БОЛЬШЕ</string>
-    <string name="profile_requiring_plugin">Профиль %1$s требует установки подключаемого модуля %2$s, но он не найден.</string>
-    <string name="missing_plugin">Отсутствующий плагин</string>
     <string name="confirm">Подтвердить</string>
     <string name="user_agent">UserAgent</string>
     <string name="update_when_connected_only_sum">Предотвратить утечку IP-адреса</string>
@@ -194,9 +192,6 @@
     <string name="unsaved_changes_prompt">Есть несохраненные изменения. Сохранить?</string>
     <string name="ss_cat">Настройки Shadowsocks</string>
     <string name="proxy_cat">Настройки сервера</string>
-    <string name="plugin_auto_connect_unlock_only">Этот плагин может не работать с автоподключением</string>
-    <string name="plugin_untrusted">Предупреждение: похоже, что этот плагин не из известного надежного источника.</string>
-    <string name="plugin_unknown">Неизвестный плагин %1$s</string>
     <string name="plugin_disabled">Отключено</string>
     <string name="plugin_configure">Настроить…</string>
     <string name="plugin">Плагин</string>
@@ -253,7 +248,7 @@
     <string name="settings">Настройки</string>
     <string name="clipboard_empty">Буфер обмена пуст</string>
     <string name="connect">Подключиться</string>
-    <string name="profile_empty">Пожалуйста, выберите профиль</string>
+    <string name="profile_empty">Пожалуйста, выберите набор прокси</string>
     <string name="reboot_required">Не удалось запустить VPN-сервис. Возможно, вам потребуется перезагрузить устройство.</string>
     <string name="vpn_permission_denied">Отказано в разрешении на создание VPN-сервиса</string>
     <string name="vpn_error">%1$s</string>
@@ -319,8 +314,6 @@
     <string name="ws_host">Хост WebSocket</string>
     <string name="alter_id">ID альтернативной аутентификации</string>
     <string name="uuid">Идентификатор пользователя</string>
-    <string name="obfs_param">Параметры Obfs</string>
-    <string name="obfs">Obfs</string>
     <string name="protocol_param">Параметры протокола</string>
     <string name="username_opt">Имя пользователя (необязательно)</string>
     <string name="speed">%1$s/с</string>
@@ -352,8 +345,6 @@
         <item quantity="many">%1$d TCP-соединений</item>
         <item quantity="other">%1$d TCP-соединений</item>
     </plurals>
-    <string name="shadowsocks_plugin_v2ray">V2Ray (плагин Shadowsocks для Android)</string>
-    <string name="shadowsocks_plugin_simple_obfs">Simple Obfs (плагин Shadowsocks для Android)</string>
     <string name="group_order_by_delay">По задержке</string>
     <string name="group_order_by_name">По имени</string>
     <string name="group_order_origin">По происхождению</string>
@@ -414,7 +405,6 @@
     <string name="mux_type">Протокол мультиплексирования</string>
     <string name="subscription_expire">Истекает: %1$s</string>
     <string name="tuic_disable_sni">Отключить SNI</string>
-    <string name="neko_plugin_internal_error">%1$s внутренняя ошибка</string>
     <string name="domain_strategy_for_direct">Стратегия домена для прямых исходящих подключений</string>
     <string name="domain_strategy_for_server">Стратегия домена для Адреса сервера</string>
     <string name="utls_fingerprint">Отпечаток uTLS</string>
@@ -445,7 +435,7 @@
     <string name="nat_result_hint">Результаты проверки NAT</string>
     <string name="acquire_wake_lock">Использовать WakeLock</string>
     <string name="resolve_server">Разрешить адрес сервера в соответствии с политикой IPv6</string>
-    <string name="app_name">Husi</string>
+    <string name="app_name">ThroneM</string>
     <string name="tuic_congestion_controller">Контроллер перегруженности</string>
     <string name="save">Сохранить</string>
     <string name="ech_config">Конфигурация ECH</string>
@@ -462,11 +452,10 @@
     <string name="test_timeout">Тайм-аут теста (мс)</string>
     <string name="get_cert_server_hint">Целевой сервер</string>
     <string name="no_thanks">Нет, спасибо</string>
-    <string name="location_permission_description">Ваше правило маршрутизации содержит правила маршрутизации Wi-Fi SSID или Wi-Fi BSSID. Чтобы они работали, husi использует разрешение на определение местоположения в фоновом режиме, чтобы получать информацию о подключенной сети Wi-Fi. Информация будет использоваться только для целей маршрутизации.</string>
+    <string name="location_permission_description">Ваше правило маршрутизации содержит правила маршрутизации Wi-Fi SSID или Wi-Fi BSSID. Чтобы они работали, thronem использует разрешение на определение местоположения в фоновом режиме, чтобы получать информацию о подключенной сети Wi-Fi. Информация будет использоваться только для целей маршрутизации.</string>
     <string name="location_permission_background_description">На Android 10 и выше требуется разрешение на определение местоположения в фоновом режиме. Выберите Разрешить все время, чтобы предоставить разрешение.</string>
     <string name="mux_preference">Настройки мультиплексирования</string>
     <string name="location_permission_title">Разрешение геолокации</string>
-    <string name="hysteria2_provider">Провайдер Hysteria2</string>
     <string name="authenticated_length">Аутентифицированнная длина</string>
     <string name="insecure_warn">Предупреждение о небезопасных прокси</string>
     <string name="experimental_authenticated_length">Сделать длину каждого сегмента полезной нагрузки фиксированной. • Требуется, чтобы клиент и сервер использовали одинаковую версию v2ray-core. Ожидаются обновления, потенциально нарушающие обратную совместимость.</string>
@@ -509,11 +498,8 @@
     <string name="custom_rule_provider">Пользовательский поставщик ресурсов правил</string>
     <string name="padding">Паддинг (обфускация случайными байтами)</string>
     <string name="done">Готово</string>
-    <string name="custom_plugin_prefix">Пользовательский префикс плагина</string>
-    <string name="custom_plugin_prefix_summary">Пожалуйста, убедитесь, что вы полностью доверяете поставщику плагина.</string>
     <string name="traffic_status">Статистика</string>
     <string name="status_memory">Память</string>
-    <string name="disable_post_quantum">Отключить постквантовое соглашение ключей</string>
     <string name="mux_min_streams">Минимум потоков</string>
     <string name="mux_max_streams">Максимум потоков</string>
     <string name="traffic_connections">Соединения</string>
@@ -615,7 +601,6 @@
     </plurals>
     <string name="action_test_config">Тест конфигурации</string>
     <string name="action_format">Формат</string>
-    <string name="juicity_provider">Провайдер Juicity</string>
     <string name="menu">Меню</string>
     <string name="mutual_tls">Взаимный TLS (mTLS)</string>
     <string name="cert_public_key_sha256">SHA-256 хеш открытого ключа сертификата</string>
@@ -634,7 +619,6 @@
     <string name="internal_link">Внутренняя ссылка</string>
     <string name="fake_ip_range_4">Диапазон Fake IP (IPv4)</string>
     <string name="fake_ip_range_6">Диапазон Fake IP (IPv6)</string>
-    <string name="provider_naive">Провайдер NaïveProxy</string>
     <string name="long_click_to_see_name">Удерживайте, чтобы увидеть название</string>
     <string name="max_log_line">Максимум строк в журнале</string>
     <string name="scroll_to_bottom">Прокрутить вниз</string>
@@ -669,13 +653,11 @@
     <string name="mtu_discovery">Определение максимального MTU маршрута</string>
     <string name="extra_paths">Дополнительные маршруты</string>
     <string name="extra_paths_max">Максимум дополнительных маршрутов</string>
-    <string name="no_plugin_found">Плагин не найден!</string>
     <string name="tun_strict_route">Строгая маршрутизация к TUN</string>
     <string name="exit">Выход</string>
     <string name="search_go">Поиск</string>
     <string name="cancel">Отмена</string>
     <string name="ok">ОК</string>
-    <string name="desktop_plugins">Десктопные Плагины</string>
     <string name="no_changes_notice">Ничего не было изменено</string>
     <string name="no_changes">Без изменений</string>
     <string name="warn_vmess_md5_auth">Эта конфигурация (аутентификация VMess с MD5) устарела по решению разработчиков из-за слабой защиты от подделки трафика и недостаточной маскировки.\n\nС 1 января 2022 года, сервер по умолчанию перестает принимать MD5-аутентификацию. Клиенты, использующие MD5, не смогут подключиться к серверу, где она отключена.\n\nПодробнее: https://github.com/v2ray/v2ray-core/issues/2523</string>
@@ -719,9 +701,7 @@
     <string name="disable_tcp_keep_alive">Отключить проверку активности TCP-соединений</string>
     <string name="tcp_keep_alive_idle">Длительность простоя до активации проверки TCP-соединения</string>
     <string name="mdns_network_interfaces">Сетевые интерфейсы mDNS</string>
-    <string name="naive_idle_timeout">Тайм-аут при простое (сек.)</string>
     <string name="access_local_network_denied">Для подключения к прокси и устройствам в локальной сети требуется разрешение на доступ к локальной сети.</string>
-    <string name="naive_tunnel_timeout">Тайм-аут туннеля (сек)</string>
     <string name="build_environment">Среда сборки</string>
     <string name="select_file">Выбрать файл</string>
     <string name="hysteria2_obfs_type">Тип обфускации</string>

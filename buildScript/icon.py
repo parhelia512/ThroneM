@@ -2,7 +2,6 @@
 
 import re
 import shutil
-import struct
 import subprocess
 import sys
 import tempfile
@@ -13,10 +12,10 @@ ROOT = Path(__file__).resolve().parent.parent
 SOURCE_LARGE = ROOT / "art" / "icon.svg"
 SOURCE_SMALL = ROOT / "art" / "icon-small.svg"
 
-CANVAS = 135.47
+CANVAS = 1024
 ANDROID_LAYER_DP = 108
 
-BACKGROUND = "#191C15"
+BACKGROUND = "#FFFFFF"
 MONOCHROME_COLOR = "#000000"
 MONOCHROME_STROKE_SCALE = 1.6
 
@@ -28,10 +27,6 @@ SMALL_ARTWORK_MAX_SIZE = 96
 MIN_STROKE_PIXELS = 1.25
 STRUCTURAL_STROKE_WIDTH = 1.0
 
-MACOS_PLATE_INSET = 0.0977
-MACOS_PLATE_CORNER = 0.225
-DESKTOP_PLATE_INSET = 0.04
-DESKTOP_PLATE_CORNER = 0.22
 LEGACY_PLATE_CORNER = 0.22
 
 MEASURE_RESOLUTION = 2048
@@ -44,22 +39,6 @@ ANDROID_MIPMAP_SIZES = {
     "xxxhdpi": 192,
 }
 STORE_SIZE = 512
-LINUX_SIZE = 512
-WINDOWS_SIZES = [16, 24, 32, 48, 64, 128, 256]
-MACOS_ELEMENTS = {
-    "icp4": 16,
-    "icp5": 32,
-    "ic11": 32,
-    "ic12": 64,
-    "ic07": 128,
-    "ic08": 256,
-    "ic13": 256,
-    "ic09": 512,
-    "ic14": 512,
-    "ic10": 1024,
-}
-ICNS_MAGIC = b"icns"
-ICNS_HEADER_SIZE = 8
 
 PATH_PATTERN = re.compile(r"<path\b(.*?)/>", re.DOTALL)
 ATTRIBUTE_PATTERN = re.compile(r'([a-zA-Z-]+)\s*=\s*"([^"]*)"')
@@ -82,9 +61,7 @@ class Plate:
     corner: float = 0.0
 
 
-DESKTOP_PLATE = Plate(BACKGROUND, DESKTOP_PLATE_INSET, DESKTOP_PLATE_CORNER)
 LEGACY_PLATE = Plate(BACKGROUND, 0.0, LEGACY_PLATE_CORNER)
-MACOS_PLATE = Plate(BACKGROUND, MACOS_PLATE_INSET, MACOS_PLATE_CORNER)
 STORE_PLATE = Plate(BACKGROUND)
 
 
@@ -317,50 +294,11 @@ def emit_android(artworks: ArtworkSet, workspace: Path) -> None:
         print(f"icon: wrote {destination.relative_to(ROOT)}")
 
 
-def emit_windows(artworks: ArtworkSet, workspace: Path) -> None:
-    magick = require_tool("magick")
-    rendered = []
-    for size in WINDOWS_SIZES:
-        target = workspace / f"windows-{size}.png"
-        rasterize_plated(artworks, DESKTOP_PLATE, size, target)
-        rendered.append(target)
-    destination = ROOT / "launcher" / "icon.ico"
-    run(magick, *(str(png) for png in rendered), str(destination))
-    print(f"icon: wrote {destination.relative_to(ROOT)}")
-
-
-def emit_macos(artworks: ArtworkSet, workspace: Path) -> None:
-    payloads = {}
-    for size in sorted(set(MACOS_ELEMENTS.values())):
-        target = workspace / f"macos-{size}.png"
-        rasterize_plated(artworks, MACOS_PLATE, size, target)
-        payloads[size] = target.read_bytes()
-
-    elements = b""
-    for element, size in MACOS_ELEMENTS.items():
-        payload = payloads[size]
-        elements += struct.pack(">4sI", element.encode(), ICNS_HEADER_SIZE + len(payload)) + payload
-    archive = struct.pack(">4sI", ICNS_MAGIC, ICNS_HEADER_SIZE + len(elements)) + elements
-
-    destination = ROOT / "release" / "macos" / "desktop" / "icon.icns"
-    destination.write_bytes(archive)
-    print(f"icon: wrote {destination.relative_to(ROOT)}")
-
-
-def emit_linux(artworks: ArtworkSet) -> None:
-    destination = ROOT / "release" / "linux" / "desktop" / "icon.png"
-    rasterize_plated(artworks, DESKTOP_PLATE, LINUX_SIZE, destination)
-    print(f"icon: wrote {destination.relative_to(ROOT)}")
-
-
 def main() -> None:
     artworks = ArtworkSet(load_artwork(SOURCE_LARGE), load_artwork(SOURCE_SMALL))
     with tempfile.TemporaryDirectory() as directory:
         workspace = Path(directory)
         emit_android(artworks, workspace)
-        emit_windows(artworks, workspace)
-        emit_macos(artworks, workspace)
-        emit_linux(artworks)
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 name: Bug report
-about: "Report husi bug"
+about: "Report thronem bug"
 body:
   - type: textarea
     attributes:
@@ -23,18 +23,18 @@ body:
       label: Logs
       description: |-
         If you can open "log" dashboard, export the log there.
-        If the crash make you can't open software, check the path `/sdcard/Android/data/fr.husi/files/stderr.log` to export your log.
+        If the crash make you can't open software, check the path `/sdcard/Android/data/io.throneproj.thronem/files/stderr.log` to export your log.
       render: shell
   - type: checkboxes
     attributes:
       label: Integrity requirements
       description: |-
         Please check all of the following options to prove that you have read and understood the requirements, otherwise this issue will be closed.
-        Husi is not a project aimed to please users who can't make any meaningful contributions and gain unethical influence, or a client which serve dark industry of 'airport' services, nor is it an advertising drainage too. If you deceive here to deliberately waste the time of the developers, you will be permanently blocked.
+        ThroneM is not a project aimed to please users who can't make any meaningful contributions and gain unethical influence, or a client which serve dark industry of 'airport' services, nor is it an advertising drainage too. If you deceive here to deliberately waste the time of the developers, you will be permanently blocked.
       options:
-        - label: I have read the [FAQ](https://github.com/xchacha20-poly1305/husi/wiki/FAQ) but failed to find the resolution. However, successfully understand the basic rule of creating an issue.
+        - label: I have read the [FAQ](https://github.com/throneproj/thronem/wiki/FAQ) but failed to find the resolution. However, successfully understand the basic rule of creating an issue.
           required: true
-        - label: I confirm that my problem is the bug of husi, but not the problem of my own network environment or my server.
+        - label: I confirm that my problem is the bug of thronem, but not the problem of my own network environment or my server.
           required: true
         - label: I confirm that I have provided the simplest configuration that can be used to reproduce the error I reported.
           required: true

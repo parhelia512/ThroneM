@@ -4,15 +4,9 @@ import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import org.gradle.api.JavaVersion
-import org.gradle.api.DefaultTask
-import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.Project
-import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Exec
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.OutputDirectory
-import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.register
 import java.io.File
@@ -54,9 +48,9 @@ private fun parseProperties(content: String): Properties =
     }
 
 fun Project.requireMetadata(key: String): Provider<String> =
-    providers.fileContents(rootProject.layout.projectDirectory.file("husi.properties")).asText.map { content ->
+    providers.fileContents(rootProject.layout.projectDirectory.file("thronem.properties")).asText.map { content ->
         parseProperties(content).getProperty(key)
-            ?: error("Missing '$key' in husi.properties.")
+            ?: error("Missing '$key' in thronem.properties.")
     }
 
 private fun Project.localProperties(): Provider<Properties> {
@@ -268,112 +262,10 @@ fun Project.setupApp() {
 
         registerApkRenamer(
             replaceFrom = project.name,
-            replaceToTemplate = "husi-%VERSION_NAME%",
-            stripTokens = listOf("-release", "-foss"),
-        )
-
-        sourceSets.getByName("main").apply {
-            jniLibs.directories.add(rootProject.file("composeApp/executableSo").toString())
-        }
-    }
-}
-
-fun Project.setupPlugin(projectName: String) {
-    val propPrefix = projectName.uppercase(Locale.ROOT)
-    val projName = projectName.lowercase(Locale.ROOT)
-    val verName = requireMetadata("${propPrefix}_VERSION_NAME").get().trim()
-    val verCode = requireMetadata("${propPrefix}_VERSION").get().trim().toInt()
-
-    androidApp.apply {
-        defaultConfig {
-            versionName = verName
-            versionCode = verCode
-        }
-    }
-
-    setupAppCommon()
-
-    val targetAbi = requireTargetAbi()
-
-    androidApp.apply {
-        buildTypes {
-            getByName("release") {
-                proguardFiles(
-                    getDefaultProguardFile("proguard-android-optimize.txt"),
-                    project(":plugin:api").file("proguard-rules.pro"),
-                )
-            }
-        }
-
-        splits.abi {
-            isEnable = true
-            isUniversalApk = false
-
-            if (targetAbi.isNotBlank()) {
-                reset()
-                include(targetAbi)
-            } else {
-                reset()
-                include("x86", "x86_64", "armeabi-v7a", "arm64-v8a")
-            }
-        }
-
-        flavorDimensions.add("vendor")
-        productFlavors {
-            create("foss")
-        }
-
-        if (
-            providers.environmentVariable("SKIP_BUILD").orNull != "on" &&
-            providers.systemProperty("SKIP_BUILD_$propPrefix").orNull != "on"
-        ) {
-            if (targetAbi.isBlank()) {
-                tasks.register<Exec>("externalBuild") {
-                    executable(rootProject.file("run"))
-                    args("plugin", projName)
-                    workingDir(rootProject.projectDir)
-                }
-
-                tasks.configureEach {
-                    if (name.startsWith("merge") && name.endsWith("JniLibFolders")) {
-                        dependsOn("externalBuild")
-                    }
-                }
-            } else {
-                tasks.register<Exec>("externalBuildInit") {
-                    executable(rootProject.file("run"))
-                    args("plugin", projName, "init")
-                    workingDir(rootProject.projectDir)
-                }
-                tasks.register<Exec>("externalBuild") {
-                    executable(rootProject.file("run"))
-                    args("plugin", projName, targetAbi)
-                    workingDir(rootProject.projectDir)
-                    dependsOn("externalBuildInit")
-                }
-                tasks.register<Exec>("externalBuildEnd") {
-                    executable(rootProject.file("run"))
-                    args("plugin", projName, "end")
-                    workingDir(rootProject.projectDir)
-                    dependsOn("externalBuild")
-                }
-                tasks.configureEach {
-                    if (name.startsWith("merge") && name.endsWith("JniLibFolders")) {
-                        dependsOn("externalBuildEnd")
-                    }
-                }
-            }
-        }
-
-        registerApkRenamer(
-            replaceFrom = project.name,
-            replaceToTemplate = "${project.name}-plugin-%VERSION_NAME%",
+            replaceToTemplate = "thronem-%VERSION_NAME%",
             stripTokens = listOf("-release", "-foss"),
         )
     }
-
-    dependencies.add("implementation", dependencies.project(":plugin:api"))
-
 }
 
 private fun Project.registerApkRenamer(
@@ -396,56 +288,5 @@ private fun Project.registerApkRenamer(
                 output.outputFileName.set(newName)
             }
         }
-    }
-}
-
-private fun writePlatformInfo(
-    outputDir: File,
-    packageName: String,
-    fileName: String,
-    platform: String,
-) {
-    val dir = outputDir.resolve(packageName.replace('.', '/'))
-    dir.mkdirs()
-    dir.resolve(fileName).writeText(
-        """
-        |package $packageName
-        |
-        |actual object PlatformInfo {
-        |    actual val platform: Platform = Platform.$platform
-        |    actual val isAndroid: Boolean
-        |        get() = platform == Platform.Android
-        |    actual val isLinux: Boolean
-        |        get() = platform == Platform.Linux
-        |    actual val isMacOs: Boolean
-        |        get() = platform == Platform.MacOs
-        |    actual val isWindows: Boolean
-        |        get() = platform == Platform.Windows
-        |}
-        """.trimMargin(),
-    )
-}
-
-abstract class GeneratePlatformInfoTask : DefaultTask() {
-    @get:OutputDirectory
-    abstract val outputDir: DirectoryProperty
-
-    @get:Input
-    abstract val packageName: Property<String>
-
-    @get:Input
-    abstract val fileName: Property<String>
-
-    @get:Input
-    abstract val platform: Property<String>
-
-    @TaskAction
-    fun generate() {
-        writePlatformInfo(
-            outputDir = outputDir.get().asFile,
-            packageName = packageName.get(),
-            fileName = fileName.get(),
-            platform = platform.get(),
-        )
     }
 }

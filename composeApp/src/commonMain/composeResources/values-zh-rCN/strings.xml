@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">虎兕</string>
+    <string name="app_name">ThroneM</string>
     <string name="project">项目</string>
     <string name="github">源代码</string>
     <string name="telegram">Telegram 更新频道</string>
@@ -65,14 +65,54 @@
     <string name="profile_name">配置名称</string>
     <string name="server_address">服务器</string>
     <string name="server_port">服务器端口</string>
+    <string name="action_masque" translatable="false">MASQUE</string>
+    <string name="masque_private_key">私钥（base64 SEC1 DER）</string>
+    <string name="masque_server_public_key">服务器公钥（base64 PKIX DER）</string>
+    <string name="masque_vhttp">HTTP 版本（auto / h3 / h2）</string>
+    <string name="masque_idle_timeout">空闲挂起（如 5m，留空 = 默认）</string>
+    <string name="masque_keep_alive">QUIC 保活（如 30s，留空 = 默认）</string>
+    <string name="warp_wizard_title">获取 WARP</string>
+    <string name="warp_wizard_desc">在 Cloudflare 注册一个免费隧道。私钥在本机生成、绝不离开设备。生成的配置会加入当前分组。</string>
+    <string name="warp_transport">传输方式</string>
+    <string name="warp_masque_desc">MASQUE 通过 HTTP/3 (QUIC) 把 IP 流量以标准 HTTPS 的形式隧道到 Cloudflare——出口 IP 通常在另一个国家。</string>
+    <string name="warp_masque_network">HTTP 版本</string>
+    <string name="warp_masque_endpoint_ip">端点 IP</string>
+    <string name="warp_masque_endpoint_ip_desc">IP 留空则使用注册返回的服务器。HTTP/3 只在少数 Cloudflare 地址上可用，HTTP/2 在整个网段都可用。</string>
+    <string name="warp_masque_port">端口</string>
+    <string name="warp_masque_sni">SNI</string>
+    <string name="warp_masque_sni_desc">留空使用默认 SNI</string>
+    <string name="warp_masque_idle">空闲挂起（分钟）</string>
+    <string name="warp_masque_keepalive_sec">保活间隔（秒）</string>
+    <string name="warp_masque_tuning_desc">空闲挂起会在无流量时暂停隧道以省电（默认 5 分钟）。保活会定时 ping QUIC 链路（默认 30 秒，仅 HTTP/3）。留空使用默认值。</string>
+    <string name="warp_license">WARP+ 许可证密钥</string>
+    <string name="warp_license_desc">WARP+ 提供 Argo 智能路由（更低延迟）。留空使用免费 WARP。</string>
+    <string name="warp_endpoint">端点</string>
+    <string name="warp_endpoint_desc">Cloudflare 对端的 host:port。开启混淆后会自动填入随机的可用 IP:port。</string>
+    <string name="warp_keepalive">持久保活（秒）</string>
+    <string name="warp_keepalive_desc">空闲时保持隧道存活（默认 25）。0 = 关闭。</string>
+    <string name="warp_obfuscate">添加 Amnezia 混淆</string>
+    <string name="warp_obfuscate_desc">注入填充流量，使 WireGuard 握手没有固定尺寸特征。普通隧道连不上时开启。</string>
+    <string name="warp_masquerade_hint">垃圾流量会伪装成真实协议。协议/域名在"高级"里选择。</string>
+    <string name="warp_advanced">高级</string>
+    <string name="warp_browser">浏览器 (ib)</string>
+    <string name="warp_masquerade_protocol">伪装协议（quic / dns / stun / sip）</string>
+    <string name="warp_masquerade_domain">伪装域名</string>
+    <string name="warp_junk_packets">垃圾包 Jc / Jmin / Jmax</string>
+    <string name="warp_include_reserved">绑定到此设备（reserved）</string>
+    <string name="warp_include_reserved_desc">发送 Cloudflare client_id。混淆时建议关闭（设备绑定容易被封）。</string>
+    <string name="warp_force_new">重新注册（强制新账号）</string>
+    <string name="warp_force_new_desc">忽略缓存的账号，重新注册一个。</string>
+    <string name="warp_register">注册</string>
+    <string name="warp_registering">注册中…</string>
+    <string name="warp_failed">WARP 注册失败</string>
+    <string name="warp_registered">WARP 配置已加入当前分组</string>
+    <string name="warp_registered_plus">WARP+ 配置已加入当前分组</string>
     <string name="username_opt">用户名 (可选)</string>
     <string name="password_opt">密码 (可选)</string>
     <string name="password">密码</string>
     <string name="enc_method">加密方式</string>
     <string name="protocol">协议</string>
     <string name="protocol_param">协议参数</string>
-    <string name="obfs">混淆</string>
-    <string name="obfs_param">混淆参数</string>
     <string name="uuid">用户ID</string>
     <string name="alter_id">替代 ID</string>
     <string name="security">传输层加密</string>
@@ -108,8 +148,9 @@
     <string name="vpn_permission_denied">VPN 服务权限请求被拒绝</string>
     <string name="reboot_required">无法启动 VPN 服务 , 您可能需要重启您的设备.</string>
     <!-- alert category -->
-    <string name="profile_empty">请选择一个服务器配置</string>
+    <string name="profile_empty">请选择一个代理集</string>
     <string name="connect">连接</string>
+ <string name="disconnect">断开连接</string>
     <string name="clipboard_empty">剪切板没有内容</string>
     <!-- menu category -->
     <string name="settings">设置</string>
@@ -156,9 +197,6 @@
     <string name="plugin">插件</string>
     <string name="plugin_configure">设置…</string>
     <string name="plugin_disabled">已停用</string>
-    <string name="plugin_unknown">未知插件: %1$s</string>
-    <string name="plugin_untrusted">请注意: 此插件的不来自可靠的来源.</string>
-    <string name="plugin_auto_connect_unlock_only">此插件可能不支持自动连接</string>
     <!-- SIP003 graphical editor -->
     <string name="sip003_editor">SIP003 插件编辑器</string>
     <string name="sip003_pick_plugin_first">请先选择插件</string>
@@ -332,8 +370,6 @@
     <string name="update_when_connected_only">仅在连接时更新</string>
     <string name="update_when_connected_only_sum">防止 IP 地址泄漏</string>
     <string name="confirm">确认</string>
-    <string name="missing_plugin">缺少插件</string>
-    <string name="profile_requiring_plugin">配置 %1$s 需要插件 %2$s, 但找不到.</string>
     <string name="action_learn_more">了解更多</string>
     <string name="action_download">下载</string>
     <string name="install_from_play_store">从 Play Store 安装</string>
@@ -391,8 +427,6 @@
     <string name="group_order_origin">原始</string>
     <string name="group_order_by_name">以名称</string>
     <string name="group_order_by_delay">以延时</string>
-    <string name="shadowsocks_plugin_v2ray">V2Ray （Shadowsocks Android 插件）</string>
-    <string name="shadowsocks_plugin_simple_obfs">Simple Obfs （Shadowsocks Android 插件）</string>
     <string name="menu_traffic">流量</string>
     <string name="route_for">%1$s 路由</string>
     <string name="app_no_launcher">该应用没有界面。</string>
@@ -439,6 +473,7 @@
     <string name="naive_insecure_concurrency_summary">使用N个并发的隧道连接，在恶劣的网络条件下更加强大。更多的连接使隧道更容易被发现，安全性更低。这个项目力求对流量分析有最强的安全性。以不安全的方式使用它就违背了它的目的。\n\n如果你必须使用它，先试试N=2，看看是否能解决你的问题。强烈建议不要在这里使用超过4个连接。</string>
     <string name="naive_tunnel_timeout">隧道超时（秒）</string>
     <string name="naive_idle_timeout">空闲超时（秒）</string>
+    <string name="disable_post_quantum">禁用后量子密钥协商</string>
     <string name="tools_network">网络</string>
     <string name="backup">备份</string>
     <string name="backup_groups_and_configurations">分组和配置</string>
@@ -483,7 +518,6 @@
     <string name="acquire_wake_lock">获取唤醒锁</string>
     <string name="release_wake_lock">释放唤醒锁</string>
     <string name="acquire_wake_lock_summary">保持 CPU 开启</string>
-    <string name="neko_plugin_internal_error">%1$s 内部错误</string>
     <string name="move">移动</string>
     <string name="subscription_expire">过期: %1$s</string>
     <string name="subscription_last_updated">上次更新：%1$s</string>
@@ -527,6 +561,9 @@
     <string name="inbound_password">入站密码</string>
     <string name="http_upgrade_host">HTTPUpgrade 主机</string>
     <string name="http_upgrade_path">HTTPUpgrade 路径</string>
+    <string name="xhttp_host">XHTTP 主机</string>
+    <string name="xhttp_path">XHTTP 路径</string>
+    <string name="xhttp_mode">XHTTP 模式</string>
     <string name="scan_vpn_app">探测 VPN 应用</string>
     <string name="scan_vpn_app_introduce">检测设备上安装的 VPN 以及它的类型。</string>
     <string name="vpn_app_type">应用类型</string>
@@ -544,10 +581,9 @@
     <string name="action_flash_off">关闭闪光灯</string>
     <string name="location_permission_title">位置权限</string>
     <string name="no_thanks">不了，谢谢</string>
-    <string name="location_permission_description">您的路由规则包含 Wi-Fi SSID 或 Wi-Fi BSSID 路由规则。为使其正常工作，虎兕 使用后台位置权限获取有关已连接 Wi-Fi 网络的信息。此信息仅用于路由目的。</string>
+    <string name="location_permission_description">您的路由规则包含 Wi-Fi SSID 或 Wi-Fi BSSID 路由规则。为使其正常工作，ThroneM 使用后台位置权限获取有关已连接 Wi-Fi 网络的信息。此信息仅用于路由目的。</string>
     <string name="location_permission_background_description">在 Android 10 及更高版本上，需要后台位置权限。选择“始终允许”以授予权限。</string>
     <string name="insecure_warn">安全建议</string>
-    <string name="hysteria2_provider">Hysteria2 提供程序</string>
     <string name="authenticated_length">长度块加密</string>
     <string name="experimental_authenticated_length">让每个有效载荷段的长度不再具有可塑性。这个实验要求服务器和客户端使用相同版本的 v2ray-core。预计会有更多关于这个实验的破坏性更新。</string>
     <string name="keep_default">保持默认</string>
@@ -592,9 +628,6 @@
     <string name="custom_rule_provider">自定义规则提供者</string>
     <string name="client_type">客户端类型</string>
     <string name="done">已完成</string>
-    <string name="desktop_plugins">桌面插件</string>
-    <string name="custom_plugin_prefix">自定义插件前缀</string>
-    <string name="custom_plugin_prefix_summary">请确定您完全信任插件提供者</string>
     <string name="traffic_status">状态</string>
     <string name="traffic_connections">连接</string>
     <string name="status_memory">内存</string>
@@ -606,7 +639,6 @@
     <string name="dashboard_hidden_widgets">已隐藏的卡片</string>
     <string name="dashboard_hide_widget">隐藏卡片</string>
     <string name="dashboard_show_widget">显示卡片</string>
-    <string name="disable_post_quantum">禁用后量子密钥协商</string>
     <string name="mux_strategy">多路复用策略</string>
     <string name="mux_number">多路复用数量</string>
     <string name="mux_max_connections">最大连接数</string>
@@ -714,7 +746,6 @@
     <string name="connection_status_active">活跃中</string>
     <string name="connection_status_closed">已关闭</string>
     <string name="can_not_be_empty">不能为空</string>
-    <string name="juicity_provider">Juicity 提供程序</string>
     <plurals name="delete_confirm_detail">
         <item quantity="other">您确定要移除以下配置吗？\n\n%1$s</item>
     </plurals>
@@ -740,7 +771,6 @@
     <string name="fake_ip_range_4">Fake IP 范围（IPv4）</string>
     <string name="fake_ip_range_6">Fake IP 范围（IPv6）</string>
     <string name="long_click_to_see_name">长按以显示名称</string>
-    <string name="provider_naive">NaïveProxy 提供程序</string>
     <string name="max_log_line">最大日志行数</string>
     <string name="scroll_to_bottom">滚动到底部</string>
     <string name="ech_query_server_name">用于查询的服务名称</string>
@@ -765,9 +795,6 @@
     <string name="exit">退出</string>
     <string name="tun_strict_route">Tun 严格路由</string>
     <string name="tun_auto_redirect">Tun 自动重定向</string>
-    <string name="no_plugin_found">没有找到任何插件！</string>
-    <string name="plugin_not_installed">未安装</string>
-    <string name="plugin_not_installed_summary">点击打开下载页面</string>
     <string name="traffic_pattern">流量模式</string>
     <string name="route_invert">反转匹配</string>
     <string name="latency">延迟</string>

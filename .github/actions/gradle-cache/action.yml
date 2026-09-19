@@ -3,7 +3,7 @@ description: >
   Two layers. (1) gradle-cache-action restores modules-2 / generated jars from
   the default branch; only `dev` writes those, so tags do not create 600 MiB
   one-shot copies. (2) Optional stable build-cache-1 snapshot, keyed by SHA,
-  so release/plugin jobs reuse compilation across tags.
+  so release jobs reuse compilation across tags.
 inputs:
   read-only:
     description: Override. Empty means write only from refs/heads/dev.
@@ -14,7 +14,7 @@ inputs:
     required: false
     default: 'true'
   build-cache-name:
-    description: If set, persist ~/.gradle/caches/build-cache-1 under this prefix (release-android, release-desktop, …).
+    description: If set, persist ~/.gradle/caches/build-cache-1 under this prefix (e.g. release-android)..
     required: false
     default: ''
 runs:

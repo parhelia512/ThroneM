@@ -7,8 +7,8 @@
         android:shortcutShortLabel="@string/quick_toggle">
         <intent
             android:action="android.intent.action.MAIN"
-            android:targetClass="fr.husi.QuickToggleActivity"
-            android:targetPackage="fr.husi" />
+            android:targetClass="io.throneproj.thronem.QuickToggleActivity"
+            android:targetPackage="io.throneproj.thronem" />
     </shortcut>
     <shortcut
         android:icon="@drawable/ic_qu_camera_launcher"
@@ -17,8 +17,8 @@
         android:shortcutShortLabel="@string/add_profile_methods_scan_qr_code">
         <intent
             android:action="android.intent.action.MAIN"
-            android:targetClass="fr.husi.ui.configuration.ScannerActivity"
-            android:targetPackage="fr.husi">
+            android:targetClass="io.throneproj.thronem.ui.configuration.ScannerActivity"
+            android:targetPackage="io.throneproj.thronem">
             <extra
                 android:name="from_shortcut"
                 android:value="true" />

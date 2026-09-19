@@ -67,8 +67,6 @@
     <string name="enc_method">加密方式</string>
     <string name="protocol">協定</string>
     <string name="protocol_param">協定參數</string>
-    <string name="obfs">混淆</string>
-    <string name="obfs_param">混淆參數</string>
     <string name="uuid">使用者 ID</string>
     <string name="alter_id">替代 ID</string>
     <string name="network">網路</string>
@@ -102,7 +100,7 @@
     <string name="vpn_permission_denied">建立 VPN 服務的權限被拒</string>
     <string name="reboot_required">無法啟動 VPN 服務，您可能需要重新啟動您的裝置。</string>
     <!-- alert category -->
-    <string name="profile_empty">請選擇一個設定檔</string>
+    <string name="profile_empty">請選擇一個代理組</string>
     <string name="connect">連線</string>
     <string name="clipboard_empty">剪貼簿為空</string>
     <!-- menu category -->
@@ -150,9 +148,6 @@
     <string name="plugin">外掛程式</string>
     <string name="plugin_configure">設定……</string>
     <string name="plugin_disabled">已停用</string>
-    <string name="plugin_unknown">未知外掛程式 %1$s</string>
-    <string name="plugin_untrusted">警告：此外掛程式並非來自可靠的可信來源。</string>
-    <string name="plugin_auto_connect_unlock_only">此外掛程式可能不支援自動連線</string>
     <!-- SIP003 graphical editor -->
     <string name="sip003_editor">SIP003 外掛程式編輯器</string>
     <string name="sip003_pick_plugin_first">請先選擇外掛程式</string>
@@ -321,8 +316,6 @@
     <string name="update_when_connected_only_sum">防止 IP 位址洩漏</string>
     <string name="user_agent">使用者代理</string>
     <string name="confirm">確認</string>
-    <string name="missing_plugin">遺失外掛程式</string>
-    <string name="profile_requiring_plugin">設定檔 %1$s 需要外掛程式 %2$s，但其未被安裝。</string>
     <string name="action_learn_more">深入瞭解</string>
     <string name="action_download">下載</string>
     <string name="install_from_play_store">從 Play 商店安裝</string>
@@ -350,8 +343,6 @@
     </plurals>
     <string name="file_manager_missing">您的裝置缺少 Android 標準檔案選擇器, 請安裝一個, 如 Material Files.</string>
     <string name="menu_traffic">流量</string>
-    <string name="shadowsocks_plugin_v2ray">V2Ray (Shadowsocks Android 外掛程式)</string>
-    <string name="shadowsocks_plugin_simple_obfs">Simple Obfs (Shadowsocks Android 外掛程式)</string>
     <string name="ssh_private_key_passphrase">私密金鑰複雜密碼</string>
     <string name="ssh_private_key">私密金鑰</string>
     <string name="ssh_public_key">公開金鑰</string>
@@ -426,7 +417,7 @@
     <string name="backup_summary">如果路由規則不與配置一起備份，則自定義出站將丟失。</string>
     <string name="backup_not_file">不是一個備份文件，預計 .json，但 %1$s</string>
     <string name="packet_encoding">包編碼</string>
-    <string name="app_name">虎兕</string>
+    <string name="app_name">ThroneM</string>
     <string name="is_outbound_only">設定的 JSON 是出站</string>
     <string name="save">儲存</string>
     <string name="show_group_in_notification">在通知中顯示組名</string>
@@ -493,7 +484,6 @@
     <string name="responsiveness_rpm">%1$s RPM</string>
     <string name="outbound_default">預設</string>
     <string name="tuic_reduce_rtt">啟用 0-RTT QUIC 握手</string>
-    <string name="neko_plugin_internal_error">%1$s 內部錯誤</string>
     <string name="move">移動</string>
     <string name="create_shortcut">建立快捷方式</string>
     <string name="need_restart">重新啟動應用程式以應用更改</string>
@@ -511,9 +501,8 @@
     <string name="no_thanks">不，謝謝</string>
     <string name="action_flash_on">開啟閃光燈</string>
     <string name="location_permission_title">位置許可</string>
-    <string name="location_permission_description">您的路由規則包含 Wi-Fi SSID 或 Wi-Fi BSSID 路由規則。為使其正常運作，虎兕 使用後台位置權限來取得已連接 Wi-Fi 網路的資訊。此資訊僅用於路由目的。</string>
+    <string name="location_permission_description">您的路由規則包含 Wi-Fi SSID 或 Wi-Fi BSSID 路由規則。為使其正常運作，ThroneM 使用後台位置權限來取得已連接 Wi-Fi 網路的資訊。此資訊僅用於路由目的。</string>
     <string name="insecure_warn">安全建議</string>
-    <string name="hysteria2_provider">Hysteria2 提供者</string>
     <string name="mux_preference">多工設定</string>
     <string name="authenticated_length">驗證長度</string>
     <string name="experimental_authenticated_length">使每個有效負載段的長度不再可變。此實驗要求伺服器和客戶端使用相同版本的 v2ray-core。預計此實驗將有更多重大更新。</string>
@@ -568,10 +557,7 @@
     <string name="dashboard_hide_widget">隱藏卡片</string>
     <string name="dashboard_show_widget">顯示卡片</string>
     <string name="done">完成</string>
-    <string name="custom_plugin_prefix">自訂插件前綴</string>
-    <string name="custom_plugin_prefix_summary">請確保您完全信任插件提供者。</string>
     <string name="padding">填充</string>
-    <string name="disable_post_quantum">禁用後量子密鑰協商</string>
     <string name="mux_strategy">多路復用策略</string>
     <string name="mux_number">複用器數量</string>
     <string name="mux_max_connections">最大連線數</string>
@@ -676,7 +662,6 @@
     <string name="connection_status_active">活躍中</string>
     <string name="connection_status_closed">已關閉</string>
     <string name="can_not_be_empty">不可為空</string>
-    <string name="juicity_provider">Juicity 提供程式</string>
     <plurals name="delete_confirm_detail">
         <item quantity="other">您確定要移除以下設定檔嗎？\n\n%1$s</item>
     </plurals>

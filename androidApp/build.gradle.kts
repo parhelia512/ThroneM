@@ -31,7 +31,7 @@ android {
     buildFeatures {
         buildConfig = false
     }
-    namespace = "fr.husi"
+    namespace = "io.throneproj.thronem"
 
 }
 

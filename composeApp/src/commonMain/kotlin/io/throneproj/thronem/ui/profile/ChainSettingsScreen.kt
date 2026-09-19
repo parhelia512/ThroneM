@@ -1,0 +1,227 @@
+package io.throneproj.thronem.ui.profile
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.ernestoyaquello.dragdropswipelazycolumn.AllowedSwipeDirections
+import com.ernestoyaquello.dragdropswipelazycolumn.DragDropSwipeLazyColumn
+import com.ernestoyaquello.dragdropswipelazycolumn.DraggableSwipeableItem
+import com.ernestoyaquello.dragdropswipelazycolumn.config.DraggableSwipeableItemColors
+import io.throneproj.thronem.compose.MaskedIcon
+import io.throneproj.thronem.compose.TextFieldPreference
+import io.throneproj.thronem.compose.TooltipIconButton
+import io.throneproj.thronem.compose.material3.Icon
+import io.throneproj.thronem.compose.material3.Text
+import io.throneproj.thronem.compose.preferenceGroup
+import io.throneproj.thronem.database.ProxyEntity
+import io.throneproj.thronem.database.displayType
+import io.throneproj.thronem.ktx.contentOrUnset
+import io.throneproj.thronem.resources.Res
+import io.throneproj.thronem.resources.add_profile
+import io.throneproj.thronem.resources.chain_settings
+import io.throneproj.thronem.resources.delete
+import io.throneproj.thronem.resources.drag_indicator
+import io.throneproj.thronem.resources.edit
+import io.throneproj.thronem.resources.emoji_symbols
+import io.throneproj.thronem.resources.profile_name
+import io.throneproj.thronem.ui.NavRoutes
+import io.throneproj.thronem.ui.OpenProfilePicker
+import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.resources.vectorResource
+
+@Composable
+fun ChainSettingsScreen(
+    profileId: Long,
+    isSubscription: Boolean,
+    onOpenProfileSelect: OpenProfilePicker,
+    onResult: (updated: Boolean) -> Unit,
+    onOpenConfigEditor: (NavRoutes.ConfigEditor) -> Unit,
+) {
+    val viewModel: ChainSettingsViewModel =
+        profileEditorViewModel(profileId = profileId, isSubscription = isSubscription) {
+            ChainSettingsViewModel()
+        }
+
+    ProfileSettingsScreenScaffold(
+        title = Res.string.chain_settings,
+        viewModel = viewModel,
+        onResult = onResult,
+        onOpenConfigEditor = onOpenConfigEditor,
+    ) { uiState, _ ->
+        chainSettings(
+            uiState = uiState as ChainUiState,
+            viewModel = viewModel,
+            onAdd = {
+                viewModel.replacing = -1
+                onOpenProfileSelect(null) { id ->
+                    viewModel.replacing = -1
+                    viewModel.onSelectProfile(id)
+                }
+            },
+            onReplace = { index, profileIdForPreselect ->
+                viewModel.replacing = index
+                onOpenProfileSelect(profileIdForPreselect.takeIf { it > 0 }) { id ->
+                    viewModel.onSelectProfile(id)
+                }
+            },
+        )
+    }
+}
+
+private fun LazyListScope.chainSettings(
+    uiState: ChainUiState,
+    viewModel: ChainSettingsViewModel,
+    onAdd: () -> Unit,
+    onReplace: (index: Int, profileId: Long) -> Unit,
+) {
+    preferenceGroup(key = "name") {
+        TextFieldPreference(
+            value = uiState.name,
+            onValueChange = { viewModel.setName(it) },
+            title = { Text(stringResource(Res.string.profile_name)) },
+            textToValue = { it },
+            icon = { MaskedIcon(Res.drawable.emoji_symbols) },
+            summary = { Text(contentOrUnset(uiState.name)) },
+            valueToText = { it },
+        )
+    }
+
+    item("add_profile") {
+        ElevatedCard(
+            onClick = onAdd,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 4.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            colors =
+                CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
+        ) {
+            Text(
+                text = stringResource(Res.string.add_profile),
+                modifier = Modifier.padding(16.dp),
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            )
+        }
+    }
+
+    item("list") {
+        val density = LocalDensity.current
+        val windowInfo = LocalWindowInfo.current
+        val maxHeight =
+            with(density) { windowInfo.containerSize.height.toDp() }.takeIf { it > 0.dp } ?: 480.dp
+        DragDropSwipeLazyColumn(
+            modifier = Modifier.fillMaxWidth().heightIn(max = maxHeight),
+            items = uiState.profiles,
+            key = { it.id },
+            contentType = { 0 },
+            userScrollEnabled = false,
+            onIndicesChangedViaDragAndDrop = { viewModel.submitReorder(it) },
+        ) { i, profile ->
+            DraggableSwipeableItem(
+                modifier = Modifier.animateDraggableSwipeableItem(),
+                colors =
+                    DraggableSwipeableItemColors.createRemembered(
+                        containerBackgroundColor = Color.Transparent,
+                        containerBackgroundColorWhileDragged = Color.Transparent,
+                    ),
+                allowedSwipeDirections = AllowedSwipeDirections.None,
+            ) {
+                ChainProfileCard(
+                    profile = profile,
+                    onReplace = { onReplace(i, profile.id) },
+                    onRemove = { viewModel.remove(i) },
+                    dragHandleModifier = Modifier.dragDropModifier(),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChainProfileCard(
+    profile: ProxyEntity,
+    onReplace: () -> Unit,
+    onRemove: () -> Unit,
+    dragHandleModifier: Modifier,
+    modifier: Modifier = Modifier,
+) {
+    ElevatedCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Icon(
+                imageVector = vectorResource(Res.drawable.drag_indicator),
+                contentDescription = "Drag to reorder",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .size(40.dp)
+                    .padding(8.dp)
+                    .then(dragHandleModifier),
+            )
+            Column(modifier = Modifier.weight(1f).padding(vertical = 4.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(start = 0.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = profile.displayName(),
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    TooltipIconButton(
+                        onClick = onReplace,
+                        icon = vectorResource(Res.drawable.edit),
+                        contentDescription = stringResource(Res.string.edit),
+                        colors =
+                            IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onSurface,
+                            ),
+                    )
+                    TooltipIconButton(
+                        onClick = onRemove,
+                        icon = vectorResource(Res.drawable.delete),
+                        contentDescription = stringResource(Res.string.delete),
+                        colors =
+                            IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.onSurface,
+                            ),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = profile.displayType(),
+                    modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.outline,
+                )
+            }
+        }
+    }
+}
